@@ -1482,7 +1482,7 @@ Choisissez votre nom dans la liste \xE0 la premi\xE8re ouverture.`;await zt(t,"L
     </button>`};return`<div class="demo-haut">
     <div class="demo-barre">
       <span class="demo-titre"><strong>D\xE9mo</strong> \xB7 donn\xE9es fictives, rien n\u2019est envoy\xE9</span>
-      <button type="button" class="btn btn-petit btn-simulation" data-demo="simuler">${A.eclair}Simuler des r\xE9ponses</button>
+      <button type="button" class="btn btn-petit btn-simulation" data-demo="simuler">${A.eclair}Simuler des r\xE9ponses de dispo</button>
       <button type="button" class="btn btn-petit" data-demo="reset">R\xE9initialiser</button>
     </div>
     <div class="demo-vues" role="group" aria-label="Choisir la vue">
@@ -1490,7 +1490,7 @@ Choisissez votre nom dans la liste \xE0 la premi\xE8re ouverture.`;await zt(t,"L
       ${n("pompier","vue-pompier",A.personne,"Vue pompier","Donner ses dispos")}
     </div>
   </div>`}function Ct(){Jt?.(),ut&&!tt.liste().some(i=>i.id===ut)&&(ut=null),Zt.innerHTML=`${Es()}<div id="demo-vue" class="${qt==="pompier"?"demo-telephone":""}"></div>`;let n=Zt.querySelector("#demo-vue");qt==="chef"?Jt=On(n,tt,{demo:!0,lienAppli:"https://exemple.github.io/astreintes/"}):ut?Jt=Mn(n,tt,ut,{demo:!0,planningGeneral:async i=>{let u=Object.keys(i?.publie||{}).filter(E=>i.publie[E]).sort().pop();return u?un(u,tt.liste(),ot(i,u)):null},onChanger:()=>{ut=null,Ot("astreintes-demo-pompier"),Ct()}}):Jt=wn(n,tt,{lienChef:!1,onChoix:i=>{ut=i,St("astreintes-demo-pompier",i),Ct()}})}Zt.addEventListener("click",async n=>{let i=n.target.closest("[data-vue]");if(i&&i.dataset.vue!==qt){qt=i.dataset.vue,Ct(),window.scrollTo(0,0);return}let u=n.target.closest("[data-demo]")?.dataset.demo;u==="simuler"?qs():u==="reset"&&await xe("Remettre la d\xE9mo \xE0 z\xE9ro ? Tes essais seront effac\xE9s.",{ok:"Remettre \xE0 z\xE9ro"})&&(tt.reinitialiser(),ut=null,Ct())});function qs(){let n=tt.liste().filter(y=>y.actif&&y.rythme!=="aucun"),i=document.createElement("div");i.className="modal-fond",i.innerHTML=`<form class="modal" role="dialog" aria-modal="true" id="sim-form">
-    <h3 class="modal-titre">Simuler des r\xE9ponses</h3>
+    <h3 class="modal-titre">Simuler des r\xE9ponses de dispo</h3>
     <div class="champ"><label for="sim-nb">Nombre de pompiers qui r\xE9pondent</label>
       <input id="sim-nb" class="nombre" type="number" inputmode="numeric" min="1" max="200" value="5"></div>
     <p class="modal-aide">Seuls des pompiers qui n\u2019ont pas encore r\xE9pondu r\xE9pondent, au hasard. \xAB Tout \xBB remplit les dispos des ${n.length} pompiers, en rempla\xE7ant les r\xE9ponses d\xE9j\xE0 donn\xE9es.</p>
