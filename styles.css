@@ -404,6 +404,7 @@ tr.flash th, tr.flash td { animation: flash 2.4s ease-out; }
 .demo-barre .btn { background: transparent; color: var(--fond); border-color: rgba(255, 255, 255, .35); }
 .demo-titre { margin-right: auto; }
 .demo-simuler { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.demo-simuler input { width: 58px; padding: 4px 6px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, .35); background: rgba(255, 255, 255, .1); color: inherit; font: inherit; text-align: center; }
 .segments { display: inline-flex; border: 1px solid rgba(255, 255, 255, .35); border-radius: 999px; padding: 2px; }
 .segment { border: 0; background: none; color: inherit; padding: 5px 12px; border-radius: 999px; font-weight: 600; cursor: pointer; font-size: .85rem; }
 .segment.actif { background: var(--fond); color: var(--encre); }
