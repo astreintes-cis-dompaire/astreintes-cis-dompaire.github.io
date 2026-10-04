@@ -396,6 +396,7 @@ tr.flash th, tr.flash td { animation: flash 2.4s ease-out; }
 }
 .demo-barre .btn { background: transparent; color: var(--fond); border-color: rgba(255, 255, 255, .35); }
 .demo-titre { margin-right: auto; }
+.demo-simuler { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .segments { display: inline-flex; border: 1px solid rgba(255, 255, 255, .35); border-radius: 999px; padding: 2px; }
 .segment { border: 0; background: none; color: inherit; padding: 5px 12px; border-radius: 999px; font-weight: 600; cursor: pointer; font-size: .85rem; }
 .segment.actif { background: var(--fond); color: var(--encre); }
@@ -858,6 +859,8 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 /* Réglages, compétences et besoins : boutons − / + pour les minimums */
 .pas { display: inline-flex; align-items: center; gap: 4px; }
 .pas .btn-icone { width: 34px; min-height: 34px; font-size: 1.1rem; border-radius: 50%; }
+.effectif-min { display: flex; flex-wrap: wrap; gap: 8px 32px; }
+.effectif-min .pas input.nombre,
 .table-qualifs .pas input.nombre { width: 54px; text-align: center; -moz-appearance: textfield; }
 .pas input::-webkit-outer-spin-button, .pas input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 @media (max-width: 760px) {
