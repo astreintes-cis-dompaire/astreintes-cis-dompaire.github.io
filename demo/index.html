@@ -362,7 +362,14 @@ tr.flash th, tr.flash td { animation: flash 2.4s ease-out; }
 .horaires { display: grid; gap: 10px; }
 .horaires > div { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .table-qualifs { min-width: 760px; }
+.table-qualifs { border-collapse: separate; border-spacing: 0; }
 .table-qualifs th, .table-qualifs td { padding: 7px 8px; border-bottom: 1px solid var(--trait); text-align: left; vertical-align: middle; }
+/* Une compétence = une bande bien distincte : fond alterné, filet épais, nom en gras. */
+.table-qualifs tbody td { padding-top: 12px; padding-bottom: 12px; border-bottom: 2px solid var(--trait); }
+.table-qualifs tbody tr:nth-child(even) td { background: var(--fond); }
+.table-qualifs tbody tr td:first-child { border-left: 4px solid var(--encre); }
+.table-qualifs tbody tr:nth-child(even) td:first-child { border-left-color: var(--discret); }
+.table-qualifs .q-nom input { font-weight: 600; }
 .table-qualifs thead th { font-size: .8rem; color: var(--discret); font-weight: 600; }
 .table-qualifs input.court { width: 90px; }
 .table-qualifs input.nombre { width: 76px; }
@@ -875,7 +882,9 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
   .table-qualifs, .table-qualifs tbody { display: block; }
   .table-qualifs tbody { display: grid; gap: 10px; }
   .table-qualifs tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px 10px; background: var(--surface); border: 1px solid var(--trait); border-radius: 14px; padding: 10px 12px; }
-  .table-qualifs td { display: grid; gap: 3px; padding: 0; border: 0; min-width: 0; }
+  .table-qualifs td, .table-qualifs tbody td, .table-qualifs tbody tr:nth-child(even) td, .table-qualifs tbody tr td:first-child { display: grid; gap: 3px; padding: 0; border: 0; min-width: 0; background: none; }
+  .table-qualifs tbody tr { border-left: 5px solid var(--encre); }
+  .table-qualifs tbody tr:nth-child(even) { background: var(--fond); border-left-color: var(--discret); }
   .table-qualifs td[data-l]::before { content: attr(data-l); font-size: .72rem; font-weight: 600; color: var(--discret); text-transform: uppercase; letter-spacing: .05em; }
   .table-qualifs .q-nom { grid-column: 1 / 3; grid-row: 1; }
   .table-qualifs .q-ordre { grid-column: 3; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 4px; align-self: start; }
