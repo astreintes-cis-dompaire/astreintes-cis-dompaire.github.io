@@ -153,7 +153,6 @@ input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--marine); }
 .sem { display: grid; gap: 8px; }
 .sem-tete { font-family: var(--f-titre); font-weight: 600; font-size: .95rem; color: var(--discret); display: grid; gap: 0; padding-top: 6px; }
 .sem-num { font-weight: 700; font-size: 1.35rem; color: var(--marine); text-transform: uppercase; letter-spacing: .04em; }
-.sem-5 .sem-num { color: var(--discret); }
 .recap-sem b { color: var(--marine); }
 .sem-choix { display: grid; gap: 6px; }
 .choix {
@@ -951,9 +950,13 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 .avis-s5.non { background: var(--attention-doux); color: var(--attention); }
 .avis-s5 span { color: var(--encre); } .avis-s5 strong { display: block; }
 /* Pompier : la 5e semaine, en option. */
-.sem-option { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--trait); background: var(--creux); font-size: .9rem; }
-.sem-option span { color: var(--discret); }
-.sem-5 { opacity: .95; }
+/* Semaine 5 : bloc à part, couleur « attention », car le planning de 5 semaines n'est pas certain. */
+.sem5-zone { display: grid; gap: 10px; margin-top: 8px; padding: 12px; border-radius: 14px; border: 2px dashed var(--attention); background: var(--attention-doux); }
+.sem-option { display: grid; gap: 4px; font-size: .9rem; }
+.sem-option strong { display: flex; align-items: center; gap: 6px; color: var(--attention); font-family: var(--f-titre); font-size: 1.05rem; text-transform: uppercase; letter-spacing: .03em; }
+.sem-option strong svg { width: 18px; height: 18px; flex: none; }
+.sem-option span { color: var(--encre); }
+.sem-5 .sem-num { color: var(--attention); }
 .recap-option { font-size: .75rem; font-weight: 600; color: var(--discret); background: var(--creux); border-radius: 99px; padding: 1px 7px; }
 .btn-simulation { border-style: dashed; }
 /* Équipe : qui a activé les notifications. */
