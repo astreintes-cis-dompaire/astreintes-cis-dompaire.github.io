@@ -975,7 +975,8 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 .sem-option span { color: var(--encre); }
 .sem-5 .sem-num { color: var(--attention); }
 .recap-option { font-size: .75rem; font-weight: 600; color: var(--discret); background: var(--creux); border-radius: 99px; padding: 1px 7px; }
-.btn-simulation { border-style: dashed; }
+.demo-barre .btn.btn-simulation { background: #F5B800; color: #121B25; border-color: #F5B800; font-weight: 700; box-shadow: 0 0 0 3px rgba(245, 184, 0, .3); }
+.demo-barre .btn.btn-simulation:hover { background: #FFC929; }
 /* Équipe : qui a activé les notifications. */
 .notif-bilan { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--rayon); font-size: .9rem; }
 .notif-bilan .ico { flex: none; margin-top: 2px; }
