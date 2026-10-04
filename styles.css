@@ -396,15 +396,26 @@ tr.flash th, tr.flash td { animation: flash 2.4s ease-out; }
 .toast.sortie { opacity: 0; transform: translateY(6px); }
 
 /* ---------- Démo ---------- */
+.demo-haut { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; }
 .demo-barre {
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   padding: 8px 16px; background: var(--encre); color: var(--fond); font-size: .88rem;
 }
 .demo-barre .btn { background: transparent; color: var(--fond); border-color: rgba(255, 255, 255, .35); }
 .demo-titre { margin-right: auto; }
-.segments { display: inline-flex; border: 1px solid rgba(255, 255, 255, .35); border-radius: 999px; padding: 2px; }
-.segment { border: 0; background: none; color: inherit; padding: 5px 12px; border-radius: 999px; font-weight: 600; cursor: pointer; font-size: .85rem; }
-.segment.actif { background: var(--fond); color: var(--encre); }
+.demo-vues { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--trait); box-shadow: var(--ombre); }
+.vue-btn {
+  --c: var(--marine); --c-doux: var(--marine-doux);
+  display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 8px 14px;
+  border: 2px solid var(--c); border-radius: var(--rayon); background: var(--c-doux); color: var(--c);
+  font: inherit; text-align: left; cursor: pointer; opacity: .75;
+}
+.vue-btn.vue-chef { --c: var(--signal); --c-doux: var(--signal-doux); }
+.vue-btn .ico { width: 26px; height: 26px; flex: none; }
+.vue-btn strong { display: block; font-family: var(--f-titre); font-size: 1.25rem; text-transform: uppercase; letter-spacing: .03em; line-height: 1.1; }
+.vue-btn small { display: block; font-size: .8rem; font-weight: 600; }
+.vue-btn:hover { opacity: 1; }
+.vue-btn.actif { background: var(--c); color: var(--fond); opacity: 1; box-shadow: 0 0 0 3px var(--c-doux); cursor: default; }
 .demo-choix select { min-height: 32px; padding: 3px 8px; width: auto; max-width: 200px; background: var(--fond); color: var(--encre); border: 0; }
 .demo-telephone { max-width: 430px; margin: 18px auto; background: var(--fond); border: 1px solid var(--trait); border-radius: 26px; min-height: 760px; }
 .demo-telephone .pp-barre { position: sticky; border-radius: 0 0 26px 26px; }
@@ -767,7 +778,13 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
   .indic-valeur { font-size: 1.4rem; }
   .indic-detail { font-size: .8rem; }
   .etape .actions .btn { flex: 1 1 100%; }
-  .demo-barre { position: static; padding: 6px 12px; gap: 6px; font-size: .8rem; }
+  .demo-haut { position: static; }
+  .demo-barre { padding: 6px 12px; gap: 6px; font-size: .8rem; }
+  .demo-vues { padding: 8px 12px; gap: 8px; }
+  .vue-btn { min-height: 52px; padding: 6px 8px; gap: 6px; }
+  .vue-btn .ico { width: 22px; height: 22px; }
+  .vue-btn strong { font-size: 1.05rem; }
+  .vue-btn small { font-size: .72rem; }
   .demo-barre .btn { min-height: 32px; padding: 4px 10px; font-size: .8rem; }
   .demo-titre { width: 100%; font-size: .75rem; }
 }
