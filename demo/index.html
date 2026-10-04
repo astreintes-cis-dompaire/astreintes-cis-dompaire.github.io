@@ -1,4 +1,5 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"></head><body>
+<!doctype html>
+<meta name="robots" content="noindex">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Démo Astreintes</title>
@@ -1443,4 +1444,3 @@ Choisissez votre nom dans la liste \xE0 la premi\xE8re ouverture.`;await Vt(t,"L
     <button type="button" class="btn btn-petit" data-demo="reset">R\xE9initialiser</button>
   </div>`}function jt(){Ut?.(),ut&&!tt.liste().some(i=>i.id===ut)&&(ut=null),Kt.innerHTML=`${ys()}<div id="demo-vue" class="${Ze==="pompier"?"demo-telephone":""}"></div>`;let n=Kt.querySelector("#demo-vue");Ze==="chef"?Ut=Wn(n,tt,{demo:!0,lienAppli:"https://exemple.github.io/astreintes/"}):ut?Ut=wn(n,tt,ut,{demo:!0,planningGeneral:async i=>{let u=Object.keys(i?.publie||{}).filter(y=>i.publie[y]).sort().pop();return u?cn(u,tt.liste(),ot(i,u)):null},onChanger:()=>{ut=null,Wt("astreintes-demo-pompier"),jt()}}):Ut=qn(n,tt,{lienChef:!1,onChoix:i=>{ut=i,St("astreintes-demo-pompier",i),jt()}})}Kt.addEventListener("click",async n=>{let i=n.target.closest("[data-vue]");if(i&&i.dataset.vue!==Ze){Ze=i.dataset.vue,jt(),window.scrollTo(0,0);return}let u=n.target.closest("[data-demo]")?.dataset.demo;if(u==="simuler"){let y=tt.simulerReponse();y?Ze==="pompier"&&oe(`${y} vient de r\xE9pondre. Passe en vue chef pour le voir.`):oe("Tout le monde a d\xE9j\xE0 r\xE9pondu.")}else if(u==="simuler-tout"){let y=tt.liste().filter(e=>e.actif&&e.rythme!=="aucun").length;await Ee(`Simulation pour la d\xE9mo : remplir au hasard les dispos des ${y} pompiers d\u2019un seul coup ? Les r\xE9ponses d\xE9j\xE0 donn\xE9es seront remplac\xE9es.`,{ok:"Lancer la simulation"})&&(tt.simulerTout(),oe(`Simulation faite : ${y} pompiers ont des dispos. Passe en vue chef pour les voir.`))}else u==="reset"&&await Ee("Remettre la d\xE9mo \xE0 z\xE9ro ? Tes essais seront effac\xE9s.",{ok:"Remettre \xE0 z\xE9ro"})&&(tt.reinitialiser(),ut=null,jt())});jt();})();
 </script>
-</body></html>
