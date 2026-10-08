@@ -372,6 +372,11 @@ tr.flash th, tr.flash td { animation: flash 2.4s ease-out; }
 .table-qualifs thead th { font-size: .8rem; color: var(--discret); font-weight: 600; }
 .table-qualifs input.court { width: 90px; }
 .table-qualifs input.nombre { width: 76px; }
+.table-qualifs .q-capa { display: block; margin-top: 4px; font-size: .78rem; color: var(--discret); }
+.table-qualifs .q-capa.manque { color: var(--signal); font-weight: 600; }
+.table-qualifs .sans-objet { display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border: 1px dashed var(--trait); border-radius: 10px; color: var(--discret); font-size: .85rem; font-weight: 600; }
+.table-qualifs .lien-sans-objet { display: block; margin-top: 4px; border: 0; background: none; padding: 0; font: inherit; font-size: .76rem; color: var(--discret); text-decoration: underline; cursor: pointer; }
+.table-qualifs input.invalide { border-color: var(--signal); box-shadow: 0 0 0 1px var(--signal); }
 .col-ordre { white-space: nowrap; }
 .col-ordre .btn-icone { width: 28px; min-height: 28px; border: 0; }
 .ligne-action { display: flex; gap: 8px; flex-wrap: wrap; }
