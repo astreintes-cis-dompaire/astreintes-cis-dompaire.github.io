@@ -10,12 +10,15 @@
   --marine: #1C3657;        /* bleu tenue : actions, astreintes */
   --marine-texte: #FFFFFF;
   --marine-doux: #DCE5F0;
+  --tete: #1C3657;          /* bandeaux du haut sur téléphone */
+  --tete-texte: #FFFFFF;
   --signal: #C62828;        /* rouge engin : marque et manques */
   --signal-doux: #FBE3E1;
   --ok: #16744A;
   --ok-doux: #DAF0E3;
   --attention: #9A5A00;
   --attention-doux: #FAEBD3;
+  --sur-signal: #FFFFFF;    /* texte posé sur le rouge ou l'orange */
   --ombre: 0 1px 2px rgba(18, 27, 37, .06), 0 4px 14px rgba(18, 27, 37, .06);
   --f-titre: "Barlow Condensed", "Roboto Condensed", "Arial Narrow", sans-serif;
   --f-texte: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -26,6 +29,7 @@
     --fond: #0D131A; --surface: #151D27; --creux: #1C2633; --encre: #E6EBF1; --discret: #94A2B3; --trait: #2A3646;
     --marine: #8FB5E3; --marine-texte: #0D131A; --marine-doux: #1D2F47;
     --signal: #F06A62; --signal-doux: #3A1D1D; --ok: #52C98F; --ok-doux: #15322A; --attention: #E7A84F; --attention-doux: #36290F;
+    --tete: #182A42; --tete-texte: #E6EBF1; --sur-signal: #160A0A;
     --ombre: 0 1px 2px rgba(0, 0, 0, .4); color-scheme: dark;
   }
 }
@@ -33,6 +37,7 @@
   --fond: #0D131A; --surface: #151D27; --creux: #1C2633; --encre: #E6EBF1; --discret: #94A2B3; --trait: #2A3646;
   --marine: #8FB5E3; --marine-texte: #0D131A; --marine-doux: #1D2F47;
   --signal: #F06A62; --signal-doux: #3A1D1D; --ok: #52C98F; --ok-doux: #15322A; --attention: #E7A84F; --attention-doux: #36290F;
+    --tete: #182A42; --tete-texte: #E6EBF1; --sur-signal: #160A0A;
   --ombre: 0 1px 2px rgba(0, 0, 0, .4); color-scheme: dark;
 }
 
@@ -89,7 +94,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .btn-primaire { background: var(--marine); border-color: var(--marine); color: var(--marine-texte); }
 .btn-primaire:hover:not(:disabled) { filter: brightness(1.08); border-color: var(--marine); }
 .btn-accent { border-color: var(--marine); color: var(--marine); }
-.btn-danger { background: var(--signal); border-color: var(--signal); color: #fff; }
+.btn-danger { background: var(--signal); border-color: var(--signal); color: var(--sur-signal); }
 .btn-danger-texte { color: var(--signal); border-color: transparent; background: transparent; padding-inline: 4px; }
 .btn-lien { border: 0; background: none; padding: 0; min-height: 0; color: var(--marine); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; font-size: inherit; }
 .btn-petit { min-height: 32px; padding: 4px 10px; font-size: .85rem; }
@@ -392,16 +397,22 @@ tr.flash th, tr.flash td { animation: flash 2.4s ease-out; }
 .fiche { display: grid; gap: 16px; }
 .toasts { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); z-index: 60; display: grid; gap: 8px; width: min(440px, calc(100% - 32px)); }
 .toast { background: var(--encre); color: var(--fond); padding: 11px 15px; border-radius: var(--rayon); font-weight: 500; font-size: .92rem; box-shadow: var(--ombre); transition: opacity .3s, transform .3s; }
-.toast.probleme { background: var(--signal); color: #fff; }
+.toast.probleme { background: var(--signal); color: var(--sur-signal); }
 .toast.sortie { opacity: 0; transform: translateY(6px); }
+
+/* Bouton clair / sombre */
+.btn-theme { gap: 6px; }
+.ch-barre .btn-theme { margin-left: auto; }
+.pp-tete-boutons { display: flex; gap: 8px; flex-wrap: wrap; }
+.pp-tete .btn-theme, .ch-entete .btn-theme { background: transparent; color: inherit; border-color: color-mix(in srgb, currentColor 40%, transparent); }
 
 /* ---------- Démo ---------- */
 .demo-haut { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; }
 .demo-barre {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
-  padding: 8px 16px; background: var(--encre); color: var(--fond); font-size: .88rem;
+  padding: 8px 16px; background: #121B25; color: #EDF0F3; font-size: .88rem; border-bottom: 1px solid var(--trait);
 }
-.demo-barre .btn { background: transparent; color: var(--fond); border-color: rgba(255, 255, 255, .35); }
+.demo-barre .btn { background: transparent; color: #EDF0F3; border-color: rgba(255, 255, 255, .35); }
 .demo-titre { margin-right: auto; }
 .demo-vues { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--trait); box-shadow: var(--ombre); }
 .vue-btn {
@@ -721,7 +732,7 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 .pg-t > span { color: var(--marine); } .pg-s > span { color: var(--ok); } .pg-w > span { color: var(--attention); }
 .pg-g ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
 .pg-g li { background: var(--creux); border-radius: 99px; padding: 2px 10px; font-size: .88rem; }
-.pg-g li.moi { background: var(--signal); color: #fff; font-weight: 600; }
+.pg-g li.moi { background: var(--signal); color: var(--sur-signal); font-weight: 600; }
 
 /* =================== TÉLÉPHONE : barre d'onglets en bas =================== */
 .barre-bas, .fab, .ch-compte-mobile { display: none; }
@@ -729,7 +740,7 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
   .ch { padding: 0 0 calc(150px + env(safe-area-inset-bottom, 0px)); }
   .ch-contenu { padding: 14px 12px 0; gap: 14px; }
   /* En-tête : bande bleue compacte, la période au centre. */
-  .ch-entete { position: static; background: var(--marine); color: var(--marine-texte); border: 0; padding: 12px 14px 14px; gap: 10px; border-radius: 0 0 18px 18px; }
+  .ch-entete { position: static; background: var(--tete); color: var(--tete-texte); border: 0; padding: 12px 14px 14px; gap: 10px; border-radius: 0 0 18px 18px; }
   .ch-entete .marque-centre { color: inherit; opacity: .8; border-color: currentColor; }
   .ch-entete .ch-compte, .ch-entete .onglets { display: none; }
   .ch-periode { display: grid; grid-template-columns: auto 1fr auto; justify-items: center; gap: 6px 8px; }
@@ -750,11 +761,11 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
   .bb .ico { width: 24px; height: 24px; padding: 2px 10px; box-sizing: content-box; border-radius: 99px; transition: background-color .15s; }
   .bb.actif { color: var(--marine); }
   .bb.actif .ico { background: var(--marine-doux); }
-  .bb-badge { position: absolute; top: 1px; left: calc(50% + 8px); background: var(--signal); color: #fff; font-size: .62rem; line-height: 1; border-radius: 99px; padding: 3px 5px; }
+  .bb-badge { position: absolute; top: 1px; left: calc(50% + 8px); background: var(--signal); color: var(--sur-signal); font-size: .62rem; line-height: 1; border-radius: 99px; padding: 3px 5px; }
   .fab {
     display: inline-flex; align-items: center; gap: 8px; position: fixed; right: 14px; z-index: 24;
     bottom: calc(78px + env(safe-area-inset-bottom, 0px)); border: 0; border-radius: 99px; padding: 13px 18px;
-    background: var(--signal); color: #fff; font: inherit; font-weight: 600; box-shadow: 0 8px 20px rgba(18, 27, 37, .28); cursor: pointer;
+    background: var(--signal); color: var(--sur-signal); font: inherit; font-weight: 600; box-shadow: 0 8px 20px rgba(18, 27, 37, .28); cursor: pointer;
   }
   .toasts { bottom: calc(140px + env(safe-area-inset-bottom, 0px)); }
 
@@ -794,13 +805,13 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 .pp[data-onglet="dispos"] [data-tab]:not([data-tab="dispos"]),
 .pp[data-onglet="planning"] [data-tab]:not([data-tab="planning"]) { display: none !important; }
 .pp { padding: 0 16px calc(150px + env(safe-area-inset-bottom, 0px)); gap: 18px; }
-.pp-tete { margin: 0 -16px; padding: 16px 16px 18px; background: var(--marine); color: var(--marine-texte); border-radius: 0 0 22px 22px; }
+.pp-tete { margin: 0 -16px; padding: 16px 16px 18px; background: var(--tete); color: var(--tete-texte); border-radius: 0 0 22px 22px; }
 .pp-tete .marque-centre { color: inherit; opacity: .8; border-color: currentColor; }
 .pp-tete .pp-nom { margin-top: 4px; font-size: 1.9rem; }
 .pp-tete .pp-grade, .pp-tete .aide { color: inherit; opacity: .8; }
 .pp-tete .btn-lien { color: inherit; }
 .pp-tete .btn { background: transparent; color: inherit; border-color: color-mix(in srgb, currentColor 40%, transparent); }
-.pp-tete .pp-message { background: color-mix(in srgb, var(--marine-texte) 12%, transparent); border: 0; color: inherit; }
+.pp-tete .pp-message { background: color-mix(in srgb, currentColor 12%, transparent); border: 0; color: inherit; }
 .pp-tete .pp-message-de { color: inherit; opacity: .75; }
 .pp-carte { background: var(--surface); border: 1px solid var(--trait); border-radius: 16px; padding: 14px; display: grid; gap: 10px; }
 .pp-carte-titre { font-family: var(--f-titre); font-size: 1.35rem; display: inline-flex; align-items: center; gap: 6px; }
@@ -868,7 +879,7 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
   .ch-entete .ch-periode { display: none; }
   .ch-entete .ch-barre { justify-content: flex-start; }
   .ch-entete .marque { display: grid; grid-template-columns: auto 1fr; gap: 0 14px; align-items: center; position: relative; z-index: 1; }
-  .ch-entete .marque-logo { grid-row: span 2; width: 58px; height: 58px; box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--signal); }
+  .ch-entete .marque-logo { grid-row: span 2; width: 58px; height: 58px; box-shadow: 0 0 0 3px var(--tete-texte), 0 0 0 6px var(--signal); }
   .ch-entete .marque-mot { font-size: 1.5rem; letter-spacing: .12em; line-height: 1.1; }
   .ch-entete .marque-centre { border: 0; padding: 0; font-size: 1.05rem; opacity: .85; letter-spacing: .04em; }
   .ch-per-mobile { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 8px; }
@@ -949,8 +960,8 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 .mq-quand { font-weight: 600; font-size: .85rem; min-width: 9em; }
 .mq-liste { display: flex; flex-wrap: wrap; gap: 4px; }
 .mq { font-size: .74rem; font-weight: 700; padding: 1px 7px; border-radius: 99px; }
-.mq-rouge { background: var(--signal); color: #fff; }
-.mq-orange { background: var(--attention); color: #fff; }
+.mq-rouge { background: var(--signal); color: var(--sur-signal); }
+.mq-orange { background: var(--attention); color: var(--sur-signal); }
 .mq-legende { margin: 0; font-size: .8rem; color: var(--discret); line-height: 1.7; }
 @media (max-width: 760px) { .bilan-tuiles { grid-template-columns: 1fr 1fr; } }
 
