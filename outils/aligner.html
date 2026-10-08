@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Astreintes : mettre le site comme la démo</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { background: var(--fond); color: var(--encre); }
+  .outil { max-width: 600px; margin: 40px auto; padding: 0 16px; }
+  .outil .btn { margin: 6px 8px 6px 0; }
+  .outil ul { padding-left: 20px; display: grid; gap: 6px; }
+  #etat { margin-top: 18px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="outil">
+  <h1>Mettre le vrai site comme la démo</h1>
+  <p>Copie dans la vraie base les compétences, les minimums et l’effectif de la démo. Rien n’est effacé : les pompiers déjà inscrits gardent leur fiche, leurs dispos et leur lien, seules leurs compétences changent.</p>
+  <button id="connexion" class="btn btn-primaire">Se connecter avec Google</button>
+  <div id="connecte" hidden>
+    <p>Connecté : <span id="qui"></span></p>
+    <div id="resume"></div>
+    <button id="appliquer" class="btn btn-primaire" hidden>Appliquer</button>
+  </div>
+  <p id="etat"></p>
+  <p><a href="../#chef">Retour à l’espace chef</a></p>
+</div>
+<script src="../config.js"></script>
+<script type="module" src="aligner.js"></script>
+</body>
+</html>
