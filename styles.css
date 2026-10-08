@@ -77,7 +77,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* Marque : carré rouge + mot en capitales serrées */
 .marque { display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-titre); }
-.marque-logo { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 2px var(--signal); }
+.marque-logo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 2px var(--signal); }
 .marque-mot { font-weight: 700; font-size: .95rem; letter-spacing: .14em; text-transform: uppercase; }
 .marque-centre { font-weight: 600; font-size: .95rem; color: var(--discret); padding-left: 8px; border-left: 1px solid var(--trait); }
 
@@ -422,17 +422,17 @@ tr.flash th, tr.flash td { animation: flash 2.4s ease-out; }
 }
 .demo-barre .btn { background: transparent; color: #EDF0F3; border-color: rgba(255, 255, 255, .35); }
 .demo-titre { margin-right: auto; }
-.demo-vues { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--trait); box-shadow: var(--ombre); }
+.demo-vues { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 6px 16px; background: var(--surface); border-bottom: 1px solid var(--trait); box-shadow: var(--ombre); }
 .vue-btn {
   --c: var(--marine); --c-doux: var(--marine-doux);
-  display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 8px 14px;
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; padding: 4px 12px;
   border: 2px solid var(--c); border-radius: var(--rayon); background: var(--c-doux); color: var(--c);
   font: inherit; text-align: left; cursor: pointer; opacity: .75;
 }
 .vue-btn.vue-chef { --c: var(--signal); --c-doux: var(--signal-doux); }
-.vue-btn .ico { width: 26px; height: 26px; flex: none; }
-.vue-btn strong { display: block; font-family: var(--f-titre); font-size: 1.25rem; text-transform: uppercase; letter-spacing: .03em; line-height: 1.1; }
-.vue-btn small { display: block; font-size: .8rem; font-weight: 600; }
+.vue-btn .ico { width: 18px; height: 18px; flex: none; }
+.vue-btn strong { display: block; font-family: var(--f-titre); font-size: .95rem; text-transform: uppercase; letter-spacing: .03em; line-height: 1.1; }
+.vue-btn small { display: block; font-size: .7rem; font-weight: 600; }
 .vue-btn:hover { opacity: 1; }
 .vue-btn.actif { background: var(--c); color: var(--fond); opacity: 1; box-shadow: 0 0 0 3px var(--c-doux); cursor: default; }
 .demo-choix select { min-height: 32px; padding: 3px 8px; width: auto; max-width: 200px; background: var(--fond); color: var(--encre); border: 0; }
@@ -799,11 +799,11 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
   .etape .actions .btn { flex: 1 1 100%; }
   .demo-haut { position: static; }
   .demo-barre { padding: 6px 12px; gap: 6px; font-size: .8rem; }
-  .demo-vues { padding: 8px 12px; gap: 8px; }
-  .vue-btn { min-height: 52px; padding: 6px 8px; gap: 6px; }
-  .vue-btn .ico { width: 22px; height: 22px; }
-  .vue-btn strong { font-size: 1.05rem; }
-  .vue-btn small { font-size: .72rem; }
+  .demo-vues { padding: 6px 12px; gap: 6px; }
+  .vue-btn { min-height: 36px; padding: 3px 8px; gap: 6px; }
+  .vue-btn .ico { width: 16px; height: 16px; }
+  .vue-btn strong { font-size: .88rem; }
+  .vue-btn small { font-size: .66rem; }
   .demo-barre .btn { min-height: 32px; padding: 4px 10px; font-size: .8rem; }
   .demo-titre { width: 100%; font-size: .75rem; }
 }
@@ -887,7 +887,7 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
   .ch-entete .ch-periode { display: none; }
   .ch-entete .ch-barre { justify-content: flex-start; }
   .ch-entete .marque { display: grid; grid-template-columns: auto 1fr; gap: 0 14px; align-items: center; position: relative; z-index: 1; }
-  .ch-entete .marque-logo { grid-row: span 2; width: 58px; height: 58px; box-shadow: 0 0 0 3px var(--tete-texte), 0 0 0 6px var(--signal); }
+  .ch-entete .marque-logo { grid-row: span 2; width: 76px; height: 76px; box-shadow: 0 0 0 3px var(--tete-texte), 0 0 0 6px var(--signal); }
   .ch-entete .marque-mot { font-size: 1.5rem; letter-spacing: .12em; line-height: 1.1; }
   .ch-entete .marque-centre { border: 0; padding: 0; font-size: 1.05rem; opacity: .85; letter-spacing: .04em; }
   .ch-per-mobile { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 8px; }
