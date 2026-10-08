@@ -267,6 +267,9 @@ input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--marine); }
 .encart { background: var(--surface); border: 1px solid var(--trait); border-radius: var(--rayon); padding: 12px 14px; display: grid; gap: 6px; }
 .encart h2 { font-size: 1.35rem; }
 .encart ul { margin: 0; padding-left: 18px; }
+.notice-competences { margin: 4px 0 12px; border-left: 4px solid var(--marine); }
+.notice-competences h3 { margin: 0; font-size: 1rem; }
+.notice-competences ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: .9rem; line-height: 1.4; }
 .encart-probleme { border-color: var(--signal); background: var(--signal-doux); color: var(--encre); }
 .encart-probleme strong { color: var(--signal); }
 .bandeau-apercu { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: var(--rayon); background: var(--marine); color: var(--marine-texte); }
