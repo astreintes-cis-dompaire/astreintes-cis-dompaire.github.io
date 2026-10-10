@@ -1,0 +1,47 @@
+# Rappels automatiques des astreintes.
+# GitHub lance ce programme toutes les 10 minutes entre 7h et 22h (heure de Paris, à une heure près) :
+# la notification « planning envoyé » part donc peu après l'envoi par le chef.
+# Les autres rappels (relances, début d'astreinte) ne partent qu'une fois, grâce au journal.
+name: Rappels d'astreinte
+
+on:
+  schedule:
+    - cron: '*/10 5-20 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  rappels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Installer
+        working-directory: rappels
+        run: npm install --no-audit --no-fund --loglevel=error
+
+      - name: Envoyer les rappels
+        working-directory: rappels
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://astreintes-cis-dompaire.github.io/' }}
+        run: node envoyer.mjs
+
+      # GitHub met en pause les tâches programmées d'un dépôt public sans activité depuis 60 jours.
+      # Ce petit enregistrement vide, au plus une fois tous les 50 jours, évite cette pause.
+      - name: Garder les rappels actifs
+        run: |
+          derniere=$(git log -1 --format=%ct)
+          if [ $(( $(date +%s) - derniere )) -gt 4320000 ]; then
+            git config user.name "rappels-astreintes"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit --allow-empty -m "Maintien des rappels automatiques"
+            git push
+          fi
