@@ -69,20 +69,43 @@ export function creneaux(periodeId, heures, n = 4) {
   return out;
 }
 
-// « Week-end du 13 nov », « Semaine du 16 nov »
+// « Week-end du 13 nov », « Semaine du 16 nov », « Semaine complète du 13 nov »
 export function libelleCreneau(c) {
-  return `${c.type === 'WE' ? 'Week-end' : 'Semaine'} du ${fmtJourCourt(c.debut)}`;
+  return `${c.type === 'WE' ? 'Week-end' : c.type === 'TOUT' ? 'Semaine complète' : 'Semaine'} du ${fmtJourCourt(c.debut)}`;
 }
 
 // Horaires affichés aux pompiers et au chef, sans heure précise.
 export function plageCreneau(c) {
-  return c.type === 'WE' ? 'du vendredi soir au lundi matin' : 'du lundi soir au vendredi matin';
+  return c.type === 'WE' ? 'du vendredi soir au lundi matin' : c.type === 'TOUT' ? 'du vendredi soir au vendredi suivant' : 'du lundi soir au vendredi matin';
+}
+
+// Astreintes d'un pompier sur une période, regroupées : week-end + semaine de la même semaine
+// forment un seul bloc « semaine complète » (du vendredi au vendredi suivant).
+export function astreintesGroupees(periodeId, heures, blocs, n = 5) {
+  const cr = creneaux(periodeId, heures, n);
+  const l = blocs || [];
+  const out = [];
+  for (let k = 1; k <= n; k++) {
+    const we = cr.find((c) => c.id === `${k}WE`), se = cr.find((c) => c.id === `${k}SE`);
+    if (l.includes(we.id) && l.includes(se.id)) {
+      out.push({
+        id: `${k}TOUT`, ids: [we.id, se.id], semaine: k, type: 'TOUT', label: 'Semaine complète',
+        debut: we.debut, fin: se.fin, hDebut: we.hDebut, hFin: se.hFin,
+      });
+    } else {
+      if (l.includes(we.id)) out.push({ ...we, ids: [we.id] });
+      if (l.includes(se.id)) out.push({ ...se, ids: [se.id] });
+    }
+  }
+  return out;
 }
 
 // Texte de la notification envoyée à la publication du planning (partagé avec les rappels).
 export function texteNotifPlanning(periodeId, heures, blocs) {
-  const texte = creneaux(periodeId, heures, 5).filter((c) => (blocs || []).includes(c.id))
-    .map((c) => `${c.label.toLowerCase()} du ${fmtJour(c.debut)} (${plageCreneau(c).replace(/^du /, '')})`)
+  const texte = astreintesGroupees(periodeId, heures, blocs, 5)
+    .map((c) => (c.type === 'TOUT'
+      ? `toute la semaine, du ${fmtJour(c.debut)} soir au ${fmtJour(addDays(c.debut, 7))}`
+      : `${c.label.toLowerCase()} du ${fmtJour(c.debut)} (${plageCreneau(c).replace(/^du /, '')})`))
     .join(', puis ');
   return `Tu es d’astreinte : ${texte}.`;
 }

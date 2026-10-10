@@ -1,4 +1,4 @@
-// Programme de rappel : lancé automatiquement par GitHub toutes les 2 heures (voir .github/workflows/rappels.yml).
+// Programme de rappel : lancé automatiquement par GitHub toutes les 10 minutes en journée (voir .github/workflows/rappels.yml).
 // Il lit la base, décide quelles notifications envoyer, les envoie et note ce qu'il a fait dans chef/journal.
 //
 // Variables d'environnement :
@@ -9,7 +9,7 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
-import { creneaux, semainesDe, libellePeriode, texteNotifPlanning, parseYmd, ymd, fmtJour, resumePlanning } from './dates.js';
+import { astreintesGroupees, semainesDe, libellePeriode, texteNotifPlanning, parseYmd, ymd, fmtJour, resumePlanning } from './dates.js';
 
 const ESSAI = process.env.ESSAI === '1';
 const SITE = (process.env.SITE_URL || '').trim().replace(/\/?$/, '/');
@@ -17,8 +17,9 @@ const RAPPELS_DEFAUT = { saisie: true, joursAvant: [7, 3, 1], heure: 18, publica
 const HEURE_DEBUT_ASTREINTE = 9; // le rappel « astreinte aujourd'hui » part le matin
 
 if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
-  console.error('Secret FIREBASE_SERVICE_ACCOUNT manquant : voir l’étape « rappels » du guide.');
-  process.exit(1);
+  // Pas d'échec (sinon GitHub envoie un courriel toutes les 10 minutes) : l'espace chef signale que rien ne tourne.
+  console.log('SECRET MANQUANT : FIREBASE_SERVICE_ACCOUNT n’est pas dans les secrets GitHub. Aucune notification envoyée.');
+  process.exit(0);
 }
 initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
 const db = getFirestore();
@@ -93,6 +94,21 @@ async function principal() {
     faits.push('rappel demandé par le chef');
   }
 
+  // 1 ter. Notification de test demandée par le chef (onglet Équipe), à toute heure.
+  const test = cfg.testNotif;
+  const cleTest = test?.le?.toMillis ? `test-${test.le.toMillis()}` : '';
+  let bilanTest = '';
+  if (cleTest && !envois[cleTest]) {
+    const p = pompiers.find((x) => x.id === test.id);
+    if (!p) bilanTest = 'Test : pompier introuvable.';
+    else if (!(p.notifs || []).some((t) => t !== 'demo')) bilanTest = `Test : ${nom(p)} n’a pas activé les rappels sur son téléphone.`;
+    else {
+      aEnvoyer.push({ pompier: p, title: 'Test des notifications', body: 'Si tu lis ce message, les rappels d’astreinte marchent sur ce téléphone.', tag: 'test', test: true });
+    }
+    envois[cleTest] = new Date().toISOString();
+    faits.push('test');
+  }
+
   // 2. Planning publié (ou republié) : chacun reçoit ses astreintes, en journée.
   if (rap.publication && heure >= 8 && heure <= 21) {
     for (const [per, ok] of Object.entries(cfg.publie || {})) {
@@ -125,12 +141,15 @@ async function principal() {
     for (const p of pompiers) {
       for (const [per, blocs] of Object.entries(p.affectations || {})) {
         if (!cfg.publie?.[per] || !Array.isArray(blocs)) continue;
-        for (const c of creneaux(per, cfg.heures, semainesDe(cfg, per))) {
-          if (blocs.includes(c.id) && ymd(c.debut) === jour) {
+        // Week-end + semaine de la même semaine : un seul rappel, le vendredi, pour toute la semaine.
+        for (const c of astreintesGroupees(per, cfg.heures, blocs, semainesDe(cfg, per))) {
+          if (ymd(c.debut) === jour) {
             aEnvoyer.push({
               pompier: p,
               title: 'Astreinte aujourd’hui',
-              body: `Ton astreinte ${c.label.toLowerCase()} commence ce soir et finit ${c.type === 'WE' ? 'lundi' : 'vendredi'} matin.`,
+              body: c.type === 'TOUT'
+                ? 'Ta semaine complète d’astreinte commence ce soir et finit vendredi prochain.'
+                : `Ton astreinte ${c.label.toLowerCase()} commence ce soir et finit ${c.type === 'WE' ? 'lundi' : 'vendredi'} matin.`,
               tag: `debut-${per}-${c.id}`,
             });
             n++;
@@ -153,11 +172,12 @@ async function principal() {
         data: { title: m.title, body: m.body, url: lienDe(m.pompier.id), tag: m.tag, ...(m.planning ? { planning: m.planning } : {}) },
         webpush: { headers: { Urgency: 'high', TTL: '86400' } },
       });
-      cibles.push({ id: m.pompier.id, token });
+      cibles.push({ id: m.pompier.id, token, test: !!m.test });
     }
   }
 
   let reussis = 0;
+  const testRes = [];
   const morts = new Map();
   if (ESSAI) {
     for (const m of aEnvoyer) console.log(`[essai] ${nom(m.pompier)} (${(m.pompier.notifs || []).length} tél.) : ${m.title} — ${m.body}`);
@@ -165,9 +185,10 @@ async function principal() {
     for (let i = 0; i < messages.length; i += 500) {
       const rep = await fcm.sendEach(messages.slice(i, i + 500));
       rep.responses.forEach((r, k) => {
+        const c = cibles[i + k];
+        if (c.test) testRes.push(r.success ? 'ok' : (r.error?.code || 'erreur'));
         if (r.success) { reussis++; return; }
         const code = r.error?.code || '';
-        const c = cibles[i + k];
         if (code.includes('registration-token-not-registered') || code.includes('invalid-registration-token')) {
           if (!morts.has(c.id)) morts.set(c.id, []);
           morts.get(c.id).push(c.token);
@@ -190,6 +211,13 @@ async function principal() {
     for (const k of cles.slice(0, Math.max(0, cles.length - 200))) delete envois[k];
     const champs = { envois, derniereExecution: FieldValue.serverTimestamp(), dernierBilan: bilan };
     if (aEnvoyer.length) Object.assign(champs, { dernierEnvoi: bilan, dernierEnvoiLe: FieldValue.serverTimestamp() });
+    if (cleTest && !bilanTest) {
+      const ok = testRes.filter((x) => x === 'ok').length;
+      const p = pompiers.find((x) => x.id === test.id);
+      bilanTest = ok ? `Test : notification envoyée à ${nom(p)} (${ok} téléphone${ok > 1 ? 's' : ''}).`
+        : `Test : échec de l’envoi à ${nom(p)} (${testRes.join(', ') || 'aucun téléphone valide'}). Il doit réactiver les rappels.`;
+    }
+    if (bilanTest) champs.dernierTest = { le: FieldValue.serverTimestamp(), bilan: bilanTest };
     await refJournal.set(champs, { mergeFields: Object.keys(champs) });
   }
 }

@@ -1008,3 +1008,70 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 .notif-oui .ico { width: 16px; height: 16px; }
 .notif-non { color: var(--discret); font-size: .85rem; }
 .notif-noms summary { cursor: pointer; font-weight: 600; margin-top: 4px; }
+
+/* Cumul par semaine dans le planning : toute la semaine + créneau seul = total */
+.f-cumul { display: grid; gap: 2px; font-size: .82rem; background: var(--marine-doux); border-radius: 6px; padding: 5px 8px; }
+.f-cumul span { display: block; white-space: nowrap; }
+.f-cumul b { font-weight: 600; display: inline-block; min-width: 6.2em; }
+.f-cumul strong { font-size: 1.05rem; color: var(--marine); }
+#zone-impression .f-cumul { font-size: 7.5pt; padding: 1mm 2mm; }
+#zone-impression .f-cumul strong { font-size: 8.5pt; }
+.bilan-alerte { display: flex; gap: 8px; align-items: flex-start; background: var(--signal-doux); color: var(--encre); border-left: 4px solid var(--signal); border-radius: 6px; padding: 8px 10px; font-size: .9rem; }
+.bilan-alerte .ico { color: var(--signal); flex: none; width: 20px; height: 20px; }
+
+/* Commentaires des pompiers : pastille rouge sur le nom, lecture en un clic */
+.com-alerte { display: inline-flex; align-items: center; gap: 3px; border: 0; cursor: pointer; font: inherit; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; background: var(--signal); color: var(--sur-signal); border-radius: 99px; padding: 2px 8px 2px 6px; margin-left: 6px; vertical-align: middle; animation: com-pulse 2s ease-in-out 3; }
+.com-alerte .ico { width: 14px; height: 14px; }
+@keyframes com-pulse { 50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--signal) 25%, transparent); } }
+.planning tr.a-com > th.col-nom { background: var(--signal-doux); box-shadow: inset 4px 0 0 var(--signal); }
+button.nom-commentaire { border: 0; background: none; padding: 0; text-align: left; cursor: pointer; color: var(--signal); font-style: italic; }
+.dc.a-com { border-color: var(--signal); background: var(--signal-doux); }
+.ds-nom.a-com { background: var(--signal); color: var(--sur-signal); display: inline-flex; align-items: center; gap: 4px; }
+.ds-nom.a-com .ico { width: 14px; height: 14px; }
+.com-carte { display: grid; gap: 8px; background: var(--signal-doux); border: 1px solid color-mix(in srgb, var(--signal) 40%, transparent); border-left: 5px solid var(--signal); border-radius: var(--rayon); padding: 12px 14px; }
+.com-titre { display: flex; gap: 8px; align-items: center; color: var(--signal); }
+.com-titre strong { color: var(--encre); }
+.com-liste { display: grid; gap: 6px; }
+.com-ligne { display: grid; grid-template-columns: minmax(110px, auto) 1fr; gap: 10px; text-align: left; font: inherit; font-size: .92rem; border: 1px solid var(--trait); background: var(--surface); color: var(--encre); border-radius: 6px; padding: 8px 10px; cursor: pointer; }
+.com-ligne span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--discret); font-style: italic; }
+.com-ligne:hover { border-color: var(--signal); }
+@media (max-width: 560px) { .com-ligne { grid-template-columns: 1fr; gap: 2px; } .com-ligne span { white-space: normal; } }
+.com-texte { margin: 0; font-size: 1.15rem; line-height: 1.5; background: var(--creux); border-left: 4px solid var(--signal); border-radius: 6px; padding: 12px 14px; white-space: pre-wrap; }
+.modal-titre .ico { color: var(--signal); vertical-align: -3px; }
+.champ-titre { font-weight: 600; font-size: .9rem; }
+
+/* Correction des dispos par le chef */
+.cd-semaines { display: grid; gap: 10px; }
+.cd-sem { display: grid; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--trait); }
+.cd-titre { font-size: .9rem; color: var(--discret); }
+.cd-titre b { color: var(--encre); margin-right: 6px; }
+.cd-choix { display: flex; flex-wrap: wrap; gap: 6px; }
+.cd-choix .puce { min-height: 36px; }
+
+/* Guide d'installation et activation des rappels (pompier) : rouge tant que ce n'est pas fait */
+.btn-alerte { background: var(--signal); border-color: var(--signal); color: var(--sur-signal); font-weight: 700; }
+.btn-alerte:hover { filter: brightness(1.05); }
+.guide-rappels { display: grid; gap: 12px; background: var(--signal-doux); border: 2px solid var(--signal); border-radius: 16px; padding: 14px; }
+.guide-titre { display: flex; gap: 10px; align-items: flex-start; }
+.guide-titre .ico { color: var(--signal); width: 28px; height: 28px; flex: none; }
+.guide-titre span { display: grid; gap: 2px; font-size: .95rem; }
+.guide-titre strong { font-family: var(--f-titre); font-size: 1.35rem; color: var(--signal); text-transform: uppercase; letter-spacing: .02em; }
+.guide-os { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.guide-os-btn { font: inherit; font-weight: 600; font-size: .92rem; min-height: 44px; border-radius: 10px; border: 1px solid var(--trait); background: var(--surface); color: var(--encre); cursor: pointer; }
+.guide-os-btn.on { border: 2px solid var(--marine); background: var(--marine-doux); color: var(--marine); }
+.guide-etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.guide-etapes li { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; background: var(--surface); border-radius: 10px; padding: 10px; font-size: .98rem; line-height: 1.4; }
+.guide-etapes li.fait { opacity: .55; }
+.guide-n { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--marine); color: var(--marine-texte); font-weight: 700; }
+.guide-etapes li.fait .guide-n { background: var(--ok); }
+.rappel-bloque { background: var(--surface); border-radius: 10px; padding: 10px; font-weight: 500; }
+.rappel-bandeau { display: flex; gap: 8px; align-items: center; width: 100%; text-align: left; font: inherit; font-size: .92rem; border: 0; border-radius: 10px; padding: 10px 12px; background: var(--signal); color: var(--sur-signal); cursor: pointer; }
+.rappel-bandeau .ico { flex: none; }
+.pp-nav .bb.bb-alerte { position: relative; }
+.pp-nav .bb.bb-alerte::after { content: "!"; position: absolute; top: 0; left: calc(50% + 8px); background: var(--signal); color: var(--sur-signal); font-size: .65rem; font-weight: 800; line-height: 1; border-radius: 99px; padding: 3px 6px; }
+
+/* Test des notifications (onglet Équipe) */
+.test-notif { display: grid; gap: 8px; border: 1px solid var(--trait); background: var(--surface); border-radius: var(--rayon); padding: 12px 14px; }
+.test-titre { display: flex; gap: 8px; align-items: center; }
+.test-alerte { background: var(--signal-doux); border-left: 4px solid var(--signal); border-radius: 6px; padding: 8px 10px; font-weight: 500; }
+.test-res { font-size: .9rem; color: var(--discret); }

@@ -1,5 +1,5 @@
 // Service worker : fonctionnement hors ligne de l'appli et affichage des notifications de rappel.
-const CACHE = 'astreintes-202610082012';
+const CACHE = 'astreintes-202610100840';
 const FICHIERS = [
   './', 'index.html', 'app.js', 'styles.css', 'config.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/badge-96.png', 'icons/favicon-32.png',
