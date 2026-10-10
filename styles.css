@@ -1075,3 +1075,8 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .test-titre { display: flex; gap: 8px; align-items: center; }
 .test-alerte { background: var(--signal-doux); border-left: 4px solid var(--signal); border-radius: 6px; padding: 8px 10px; font-weight: 500; }
 .test-res { font-size: .9rem; color: var(--discret); }
+
+/* Envoi par SMS */
+.sms-liste { list-style: none; margin: 0; padding: 0; }
+.sms-ligne { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--trait); }
+#sms-texte { width: 100%; }
