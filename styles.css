@@ -1381,3 +1381,26 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .gen-lib { font-size: .85rem; font-weight: 600; color: var(--discret); margin-right: -8px; }
 .etape-gen [data-action="proposer"] { margin-left: auto; }
 @media (max-width: 760px) { .gen-sep, .gen-lib { display: none; } .etape-gen [data-action="proposer"] { margin-left: 0; } }
+
+/* Feuille compacte de « Planning à venir » (l'impression et l'aperçu gardent la version complète) */
+.bilan-ligne .etape-titre { margin: 0 6px 0 0; }
+.bilan-ligne .bilan-tuiles { flex: 1 1 auto; }
+.bilan-bouton { border: 0; font: inherit; cursor: pointer; }
+.bilan-bouton:hover { filter: brightness(.96); }
+.f-compact { padding: 10px; }
+.f-compact .f-poubelle { padding: 6px; font-size: .8rem; }
+.f-compact .f-col { padding: 8px 10px; gap: 6px; }
+.f-compact .f-col h3 { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; margin: 0; }
+.f-compact .f-col h3 small { font-family: var(--f-texte); font-weight: 500; font-size: .78rem; color: var(--discret); }
+.f-cumul-court { display: flex; gap: 12px; padding: 4px 8px; font-size: .85rem; }
+.f-cumul-court strong { font-size: 1rem; }
+.f-compact .f-manques { list-style: none; margin: 0; padding: 4px 6px; display: grid; gap: 3px; }
+.f-compact .f-manques li { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; font-size: .78rem; }
+.f-compact .f-manques li b { margin-right: 2px; }
+.f-compact .f-manques .mq { font-size: .72rem; padding: 1px 6px; }
+.f-compact .f-complet { display: flex; align-items: center; gap: 4px; margin: 0; font-size: .8rem; }
+.f-compact .f-complet .ico { width: 14px; height: 14px; }
+.f-compact .f-g { gap: 3px; }
+.f-compact .f-g h4 { margin: 4px 0 0; }
+.f-compact .f-g ul:empty { display: none; }
+.f-compact .f-ajout { padding: 2px 8px; min-height: 26px; font-size: .8rem; }
