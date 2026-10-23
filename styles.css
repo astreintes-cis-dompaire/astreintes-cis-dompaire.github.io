@@ -1404,3 +1404,38 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .f-compact .f-g h4 { margin: 4px 0 0; }
 .f-compact .f-g ul:empty { display: none; }
 .f-compact .f-ajout { padding: 2px 8px; min-height: 26px; font-size: .8rem; }
+.sim-bloc { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid var(--trait); border-radius: 10px; }
+.sim-bloc h4 { margin: 0; }
+.sim-bloc .modal-aide { margin: 0; }
+.sim-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sim-ligne .nombre { width: 90px; }
+
+/* Réglages réorganisés : 3 cartes en haut (Période, Centre, Rappels), puis les besoins */
+.reglages { gap: 14px; }
+.reg-haut { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.reg-carte { gap: 10px; }
+.reglages .bloc-reglage { padding: 14px 16px; }
+.reg-titre { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0; font-size: 1.15rem; }
+.reg-titre small { font-family: var(--f-texte); font-weight: 400; font-size: .82rem; color: var(--discret); margin-left: 4px; }
+.reg-ico { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; color: #FFFFFF; }
+.reg-ico .ico { width: 17px; height: 17px; }
+.reg-bleu { background: #2D5C99; } .reg-rouge { background: #C62828; } .reg-orange { background: #E08A00; } .reg-vert { background: #16744A; }
+.reg-carte .champ { gap: 4px; margin: 0; }
+.reg-carte .aide { margin: 0; font-size: .82rem; }
+.reg-carte .puces { margin-top: 6px; }
+.reg-inline { display: flex; align-items: center; gap: 10px; }
+.reg-inline select { width: auto; }
+.reg-effectif { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 12px; border-radius: 10px; background: var(--marine-doux); }
+.reg-effectif > div:first-child { display: grid; margin-right: auto; }
+.reg-effectif label { font-weight: 600; font-size: .9rem; }
+.reg-effectif #r-bilan-effectif { flex-basis: 100%; margin: 0; font-size: .82rem; }
+.notice-competences { padding: 8px 12px; }
+.notice-competences summary { cursor: pointer; font-weight: 600; }
+.notice-competences ol { margin: 8px 0 0; font-size: .88rem; }
+.table-qualifs td, .table-qualifs th { padding-top: 6px; padding-bottom: 6px; }
+@media (max-width: 1100px) { .reg-haut { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 760px) { .reg-haut { grid-template-columns: 1fr; } .reg-effectif > div:first-child { flex-basis: 100%; } }
+.reg-effectif .nombre { width: 56px; text-align: center; }
+.table-qualifs input { min-height: 34px; padding: 4px 8px; }
+.table-qualifs .nombre { width: 50px; text-align: center; }
+.table-qualifs .btn-icone { min-height: 28px; width: 28px; }
