@@ -1342,3 +1342,42 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
   .dh-lien { margin: 0; padding: 2px 0; font-size: .8rem; }
   .sans-liste { columns: 1; }
 }
+
+/* Planning à venir compacté : section 1 sur une ligne, haut de la section 2 resserré */
+.etapes { gap: 12px; }
+.etapes .etape { gap: 10px; padding: 12px 14px; }
+.etapes .etape-titre { font-size: 1.15rem; gap: 8px; flex-wrap: wrap; }
+.etapes .etape-n { width: 26px; height: 26px; font-size: .95rem; }
+.etapes .btn { min-height: 34px; padding: 5px 12px; font-size: .88rem; }
+.etapes .btn .ico { width: 17px; height: 17px; }
+.etape-gen { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.etape-gen .etape-titre { margin: 0; }
+.gen-info { font-size: .9rem; color: var(--discret); font-weight: 600; cursor: help; display: inline-flex; align-items: center; gap: 6px; }
+.gen-aide { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--creux); font-size: .75rem; color: var(--encre); }
+.etape-gen .duree .vue { flex-direction: row; padding: 4px 12px; font-size: .85rem; }
+.etape-gen .vues { padding: 3px; }
+.avis-court { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 99px; font-size: .82rem; font-weight: 600; cursor: help; }
+.avis-court .ico { width: 15px; height: 15px; }
+.avis-court.ok { background: var(--ok-doux); color: var(--ok); }
+.avis-court.non { background: var(--attention-doux); color: var(--attention); }
+.gen-calcul { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .9rem; }
+.gen-calcul .route { width: 80px; }
+.etape-gen .prop-nav { gap: 6px; font-size: .88rem; }
+.etape-titre .bilan-verdict { font-size: .95rem; font-family: var(--f-texte); font-weight: 700; gap: 8px; margin-left: 6px; }
+.etape-titre .bilan-rond { width: 10px; height: 10px; box-shadow: 0 0 0 4px var(--ok-doux); }
+.bilan-ligne { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.bilan-ligne .bilan-tuiles { display: flex; flex-wrap: wrap; gap: 6px; }
+.bilan-ligne .bilan-t { display: inline-flex; gap: 6px; padding: 4px 10px; border-radius: 99px; }
+.bilan-ligne .bilan-t .ico { width: 15px; height: 15px; }
+.bilan-ligne .bilan-t strong { font-size: 1.05rem; }
+.bilan-ligne .bilan-t span { font-size: .8rem; }
+.bilan-ligne .vues { padding: 3px; }
+.bilan-ligne .vue { padding: 4px 10px; font-size: .85rem; }
+.etapes .consigne { padding: 6px 10px; font-size: .85rem; }
+.etapes .carte-manques { padding: 6px 10px; }
+@media (max-width: 760px) { .bilan-ligne .vues { width: 100%; } }
+.gen-info .ico { width: 16px; height: 16px; }
+.gen-sep { width: 1px; height: 24px; background: var(--trait); }
+.gen-lib { font-size: .85rem; font-weight: 600; color: var(--discret); margin-right: -8px; }
+.etape-gen [data-action="proposer"] { margin-left: auto; }
+@media (max-width: 760px) { .gen-sep, .gen-lib { display: none; } .etape-gen [data-action="proposer"] { margin-left: 0; } }
