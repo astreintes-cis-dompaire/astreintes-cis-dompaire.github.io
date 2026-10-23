@@ -692,7 +692,29 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 .etape-titre { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; }
 .etape-n { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--marine); color: var(--marine-texte); font-size: 1.1rem; flex: none; }
 .etape .aide { margin: 0; }
-.btn-generer { justify-self: start; }
+.btn-generer { justify-self: start; width: auto; min-height: 42px; padding: 0 22px; font-size: .95rem; }
+
+/* Les 4 boutons d'envoi (planning et garde du samedi) */
+.envoi-grille { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.envoi-btn { display: flex; align-items: center; gap: 10px; text-align: left; padding: 12px; min-height: 64px; border-radius: 12px; border: 1.5px solid var(--trait); background: var(--surface); color: var(--encre); font: inherit; cursor: pointer; }
+.envoi-btn .ico { flex: none; width: 34px; height: 34px; padding: 7px; border-radius: 50%; background: var(--marine-doux); color: var(--marine); }
+.envoi-btn span { display: grid; gap: 2px; min-width: 0; }
+.envoi-btn strong { font-size: .95rem; line-height: 1.2; }
+.envoi-btn small { color: var(--discret); font-size: .8rem; line-height: 1.25; overflow-wrap: anywhere; }
+.envoi-btn:hover:not(:disabled) { border-color: var(--marine); }
+.envoi-btn:disabled { opacity: .5; cursor: not-allowed; }
+.envoi-apercu { background: var(--creux); }
+.envoi-tout { background: var(--marine); border-color: var(--marine); color: var(--marine-texte); }
+.envoi-tout small { color: inherit; opacity: .85; }
+.envoi-tout .ico { background: color-mix(in srgb, var(--marine-texte) 18%, transparent); color: inherit; }
+@media (max-width: 1100px) { .envoi-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .envoi-grille { grid-template-columns: minmax(0, 1fr); } }
+.garde-valider { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-bottom: 12px; border-bottom: 1px solid var(--trait); }
+.garde-valider .aide { flex: 1 1 260px; display: flex; gap: 6px; align-items: flex-start; }
+.btn-valider { background: var(--ok); border-color: var(--ok); }
+.com-voir { justify-self: start; padding-left: 0; }
+.apercu-mot { display: grid; gap: 8px; border-top: 1px solid var(--trait); padding-top: 12px; }
+.apercu-mot h4 { margin: 0; }
 .consigne { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 12px; border-radius: var(--rayon); background: var(--marine-doux); font-size: .95rem; }
 .consigne svg { flex: none; margin-top: 2px; }
 .tableau-complet { border-top: 1px solid var(--trait); padding-top: 10px; }
@@ -1250,7 +1272,7 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .ch-lateral, .ch-fil { display: none; }
 @media (min-width: 761px) {
   .ch.ch-lat { max-width: none; padding: 0; display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 100vh; }
-  .ch-lat .ch-droite { min-width: 0; padding: 0 28px 60px; max-width: 1240px; }
+  .ch-lat .ch-droite { min-width: 0; padding: 0 28px 60px; }
   .ch-lat .ch-entete .onglets, .ch-lat .ch-entete .ch-barre { display: none; }
   .ch-lat .ch-entete { padding-top: 12px; padding-bottom: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
   .ch-lat .ch-fil { display: block; margin: 0; font-size: 1.05rem; }
@@ -1283,3 +1305,5 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
   .lat-pied .btn-theme { justify-self: start; background: transparent; color: #C9D4E2; border-color: rgba(255, 255, 255, .3); }
   .lat-compte-mail { color: #7F93AB; font-size: .78rem; overflow-wrap: anywhere; }
 }
+.rp-envois { display: grid; gap: 8px; }
+.rp-envois .aide { margin: 0; }

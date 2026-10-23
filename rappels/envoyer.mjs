@@ -118,6 +118,8 @@ async function principal() {
       if (envois[cle]) continue;
       const fin = parseYmd(per); fin.setDate(fin.getDate() + 7 * semainesDe(cfg, per));
       if (fin < parseYmd(jour)) { envois[cle] = 'periode passee'; continue; }
+      if (cfg.publieNotif?.[per] === false) { envois[cle] = 'sans notification'; continue; }
+      const mot = String(cfg.messagePlanning?.[per] || '').trim().slice(0, 200);
       // Le planning général voyage avec la notification : le téléphone le garde et l'appli l'affiche.
       // Une notification web est limitée à 4 Ko : au-delà, on ne joint pas le planning général.
       const general = JSON.stringify(resumePlanning(per, pompiers, semainesDe(cfg, per)));
@@ -127,7 +129,7 @@ async function principal() {
         if (!blocs.length) continue;
         aEnvoyer.push({
           pompier: p, title: 'Planning d’astreinte publié', tag: `publication-${per}`, planning: joint,
-          body: `${texteNotifPlanning(per, cfg.heures, blocs)}${joint ? ' Touche pour voir aussi le planning général.' : ''}`,
+          body: `${texteNotifPlanning(per, cfg.heures, blocs)}${mot ? ` ${mot}` : ''}${joint ? ' Touche pour voir aussi le planning général.' : ''}`,
         });
       }
       envois[cle] = new Date().toISOString();
@@ -198,11 +200,13 @@ async function principal() {
     }
     const ge = cfg.gardeEnvoi;
     const cleGe = ge?.le?.toMillis ? `garde-envoi-${ge.le.toMillis()}` : '';
-    if (cleGe && !envois[cleGe] && ge.samedi >= jour) {
+    if (cleGe && !envois[cleGe] && ge.notif === false) envois[cleGe] = 'sans notification';
+    else if (cleGe && !envois[cleGe] && ge.samedi >= jour) {
+      const mot = String(ge.message || '').trim().slice(0, 200);
       for (const id of ge.ids || []) {
         const p = pompiers.find((x) => x.id === id);
         if (!p || envois[`garde-retenu-${ge.samedi}-${id}`]) continue;
-        aEnvoyer.push({ pompier: p, tag: `garde-${ge.samedi}`, ancre: 'garde', title: 'Garde postée : tu es retenu', body: `Tu es retenu pour la garde postée du ${libelleGarde(ge.samedi)}, à la caserne.` });
+        aEnvoyer.push({ pompier: p, tag: `garde-${ge.samedi}`, ancre: 'garde', title: 'Garde postée : tu es retenu', body: `Tu es retenu pour la garde postée du ${libelleGarde(ge.samedi)}, à la caserne.${mot ? ` ${mot}` : ''}` });
         envois[`garde-retenu-${ge.samedi}-${id}`] = new Date().toISOString();
       }
       envois[cleGe] = new Date().toISOString();
