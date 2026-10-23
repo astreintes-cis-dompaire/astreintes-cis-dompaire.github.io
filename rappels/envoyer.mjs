@@ -27,9 +27,9 @@ const fcm = getMessaging();
 
 function maintenantParis() {
   const morceaux = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23',
+    timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
   }).formatToParts(new Date()).map((p) => [p.type, p.value]));
-  return { jour: `${morceaux.year}-${morceaux.month}-${morceaux.day}`, heure: Number(morceaux.hour) };
+  return { jour: `${morceaux.year}-${morceaux.month}-${morceaux.day}`, heure: Number(morceaux.hour), minute: Number(morceaux.minute) };
 }
 
 function joursEntre(de, a) {
@@ -46,7 +46,9 @@ async function principal() {
   const refJournal = db.doc('chef/journal');
   const journal = (await refJournal.get()).data() || {};
   const envois = { ...(journal.envois || {}) };
-  const { jour, heure } = maintenantParis();
+  const { jour, heure, minute } = maintenantParis();
+  // Heure de Paris au même format que les dates des remplacements (« AAAA-MM-JJTHH:MM »), pour les comparer.
+  const maintenant = dateHeure(`${jour}T${String(heure).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
   const pompiers = (await db.collection('pompiers').get()).docs
     .map((d) => ({ id: d.id, ...d.data() }))
     .filter((p) => p.actif !== false);
@@ -215,8 +217,8 @@ async function principal() {
   }
 
   // 5. Demandes de remplacement : le chef est prévenu de chaque nouvelle demande,
-  //    le pompier de la réponse, et le remplaçant quand la demande est acceptée.
-  //    Chaque envoi est noté dans la demande elle-même (notifChef, notifReponse).
+  //    le pompier de la réponse, et le remplaçant quand la demande est acceptée puis 30 minutes avant le début.
+  //    Chaque envoi est noté dans la demande elle-même (notifChef, notifReponse, notifRappel).
   const marques = []; // [id du pompier, chemin du champ, valeur]
   const limiteGarde = new Date(Date.now() - 60 * 86400000);
   let nRemp = 0;
@@ -243,8 +245,24 @@ async function principal() {
         });
         const q = ok && r.remplacant ? pompiers.find((x) => x.id === r.remplacant) : null;
         if (q) aEnvoyer.push({ pompier: q, tag: `remplace-${rid}`, ancre: 'remplacement', title: 'Tu remplaces un collègue', body: `Tu remplaces ${nom(p)} : ${quoi}.` });
+        // Acceptée moins de 30 minutes avant le début : ce message sert aussi de rappel.
+        if (q && r.du && maintenant >= new Date(dateHeure(r.du) - 30 * 60000)) marques.push([p.id, `remplacements.${rid}.notifRappel`, true]);
         marques.push([p.id, `remplacements.${rid}.notifReponse`, true]);
         nRemp++;
+      } else if (r.statut === 'accepte' && r.remplacant && r.du && r.au && !r.notifRappel) {
+        // Rappel au remplaçant, au plus 30 minutes avant le début de ce qu'il remplace (envoyé tant que ce n'est pas fini,
+        // au cas où le programme a tourné en retard).
+        const debut = dateHeure(r.du);
+        const q = pompiers.find((x) => x.id === r.remplacant);
+        if (q && maintenant >= new Date(debut - 30 * 60000) && maintenant < dateHeure(r.au)) {
+          const hh = r.du.split('T')[1] || '';
+          aEnvoyer.push({
+            pompier: q, tag: `remplace-rappel-${rid}`, ancre: 'remplacement', title: 'Ton remplacement commence bientôt',
+            body: `${maintenant < debut ? `À ${hh.replace(':', 'h')}` : 'Maintenant'} : tu remplaces ${nom(p)}, ${quoi}.`,
+          });
+          marques.push([p.id, `remplacements.${rid}.notifRappel`, true]);
+          nRemp++;
+        }
       }
     }
     for (const [rid, r] of Object.entries(p.remplacementsRecus || {})) {
