@@ -1232,3 +1232,16 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .pp-tete .pp-tete-ligne { flex-wrap: nowrap; }
 .pp-tete .pp-tete-ligne .btn-theme { font-size: 0; gap: 0; padding: 6px; min-height: 0; }
 .pp-tete .pp-tete-ligne .btn-theme .ico { width: 20px; height: 20px; }
+/* Accueil : les 4 boutons remplissent l'écran */
+.pp[data-onglet="accueil"] { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); gap: 12px; }
+.pp[data-onglet="accueil"] > *:empty { display: none; }
+.pp[data-onglet="accueil"] #pp-tuiles { flex: 1; display: flex; min-height: 420px; }
+.pp[data-onglet="accueil"] .tuiles { flex: 1; grid-auto-rows: 1fr; }
+.pp[data-onglet="accueil"] .tuile { min-height: 0; padding: 16px 14px 24px; }
+.pp[data-onglet="accueil"] .tuile strong { font-size: 1.65rem; }
+.pp[data-onglet="accueil"] .tuile-ico { width: 52px; height: 52px; border-radius: 14px; }
+.pp[data-onglet="accueil"] .tuile-ico .ico { width: 30px; height: 30px; }
+.demo-telephone .pp[data-onglet="accueil"] { min-height: 760px; }
+.pp-tete .pp-tete-ligne .btn-cloche { position: relative; padding: 6px; min-height: 0; background: transparent; color: inherit; border-color: color-mix(in srgb, currentColor 40%, transparent); }
+.pp-tete .pp-tete-ligne .btn-cloche .ico { width: 20px; height: 20px; }
+.btn-cloche.off::after { content: ""; position: absolute; top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 50%; background: #F2C200; }
