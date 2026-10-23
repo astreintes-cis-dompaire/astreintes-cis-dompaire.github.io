@@ -1307,3 +1307,38 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 }
 .rp-envois { display: grid; gap: 8px; }
 .rp-envois .aide { margin: 0; }
+
+/* Haut de « Dispos reçues » : un bandeau bleu tenue avec le rond de progression et 3 tuiles */
+.dh { display: flex; align-items: center; gap: 14px 20px; flex-wrap: wrap; padding: 14px 18px; border-radius: 14px; color: #FFFFFF;
+  background: linear-gradient(110deg, #1C3657, #2D5C99); box-shadow: 0 6px 18px rgba(28, 54, 87, .22); }
+.dh-tete { display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1 1 260px; }
+.dh-rond { width: 62px; height: 62px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: conic-gradient(#5FD39A var(--p), rgba(255, 255, 255, .18) 0); }
+.dh-rond > span { width: 50px; height: 50px; border-radius: 50%; background: #1F3D63; display: grid; place-items: center; align-content: center; font-family: var(--f-titre); font-size: 1.3rem; line-height: 1; }
+.dh-rond small { font-size: .7rem; opacity: .75; }
+.dh-titre { display: grid; gap: 2px; min-width: 0; }
+.dh-titre strong { font-family: var(--f-titre); font-size: 1.45rem; letter-spacing: .02em; line-height: 1.1; }
+.dh-titre small { color: #C9D8EA; font-size: .9rem; }
+.dh-tuiles { display: flex; gap: 10px; flex-wrap: wrap; }
+.dh-tuile { display: flex; align-items: center; gap: 10px; min-width: 170px; padding: 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .14); }
+.dh-ico { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; background: #64748B; color: #FFFFFF; }
+.dh-ico .ico { width: 18px; height: 18px; }
+.dh-vert .dh-ico { background: #16744A; }
+.dh-rouge .dh-ico { background: #C62828; }
+.dh-orange .dh-ico { background: #E08A00; }
+.dh-txt { display: grid; line-height: 1.1; }
+.dh-txt strong { font-family: var(--f-titre); font-size: 1.25rem; }
+.dh-txt small { color: #C9D8EA; font-size: .8rem; }
+.dh-lien { margin-left: auto; background: none; border: 0; color: #FFFFFF; font: inherit; font-weight: 700; font-size: .85rem; text-decoration: underline; cursor: pointer; padding: 4px 0 4px 6px; }
+.dh-lien:hover { color: #FFE08A; }
+.sans-liste { margin: 0; padding-left: 18px; columns: 2; font-size: .95rem; }
+@media (max-width: 760px) {
+  .dh { padding: 12px; }
+  .dh-tuiles { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .dh-tuile { min-width: 0; flex-direction: column; gap: 4px; padding: 8px 4px; text-align: center; }
+  .dh-ico { width: 28px; height: 28px; }
+  .dh-txt strong { font-size: 1.1rem; }
+  .dh-txt small { font-size: .72rem; }
+  .dh-lien { margin: 0; padding: 2px 0; font-size: .8rem; }
+  .sans-liste { columns: 1; }
+}
