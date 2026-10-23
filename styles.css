@@ -1245,3 +1245,41 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .pp-tete .pp-tete-ligne .btn-cloche { position: relative; padding: 6px; min-height: 0; background: transparent; color: inherit; border-color: color-mix(in srgb, currentColor 40%, transparent); }
 .pp-tete .pp-tete-ligne .btn-cloche .ico { width: 20px; height: 20px; }
 .btn-cloche.off::after { content: ""; position: absolute; top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 50%; background: #F2C200; }
+
+/* =================== CHEF : bandeau latéral (ordinateur) =================== */
+.ch-lateral, .ch-fil { display: none; }
+@media (min-width: 761px) {
+  .ch.ch-lat { max-width: none; padding: 0; display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 100vh; }
+  .ch-lat .ch-droite { min-width: 0; padding: 0 28px 60px; max-width: 1240px; }
+  .ch-lat .ch-entete .onglets, .ch-lat .ch-entete .ch-barre { display: none; }
+  .ch-lat .ch-entete { padding-top: 12px; padding-bottom: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+  .ch-lat .ch-fil { display: block; margin: 0; font-size: 1.05rem; }
+  .ch-lat .ch-fil span { color: var(--discret); }
+  .ch-lat .ch-periode { margin-left: auto; }
+  .ch-lateral {
+    position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column;
+    background: #14273F; color: #C9D4E2; --l-c: #4E5A68;
+  }
+  .lat-tete { display: grid; justify-items: center; gap: 6px; padding: 22px 16px 18px; text-align: center;
+    background: linear-gradient(180deg, #1C3657, #14273F); border-bottom: 1px solid rgba(255, 255, 255, .1); }
+  .lat-logo { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 6px 16px rgba(0, 0, 0, .4); }
+  .lat-centre { font-family: var(--f-titre); font-size: 1.35rem; letter-spacing: .06em; text-transform: uppercase; color: #fff; }
+  .lat-sous { font-size: .82rem; color: #9FB2C8; }
+  .lat-groupe { margin: 0; padding: 14px 18px 6px; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: #7F93AB; font-weight: 700; }
+  .lat-item { display: flex; align-items: center; gap: 12px; margin: 1px 10px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent;
+    color: #C9D4E2; font: inherit; font-weight: 600; font-size: .98rem; text-align: left; cursor: pointer; }
+  .lat-item:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+  .lat-item.actif { background: rgba(255, 255, 255, .1); color: #fff; box-shadow: inset 4px 0 0 var(--l-c); }
+  .lat-ico { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--l-c); color: #fff; }
+  .lat-ico .ico { width: 18px; height: 18px; }
+  .lat-libelle { flex: 1; }
+  .lat-compte { background: var(--l-c); color: #fff; border-radius: 99px; padding: 1px 8px; font-size: .75rem; font-weight: 800; }
+  .lat-rouge { --l-c: #C62828; } .lat-bleu { --l-c: #2D5C99; } .lat-vert { --l-c: #1E7B4F; } .lat-orange { --l-c: #C77700; }
+  .lat-violet { --l-c: #6A3FA0; } .lat-ardoise { --l-c: #5B6B7F; } .lat-gris { --l-c: #4E5A68; }
+  .lat-pied { margin-top: auto; padding: 14px 18px; border-top: 1px solid rgba(255, 255, 255, .1); display: grid; gap: 8px; font-size: .88rem; }
+  .lat-lien { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; padding: 0; color: #C9D4E2; font: inherit; text-decoration: none; cursor: pointer; }
+  .lat-lien:hover { color: #fff; }
+  .lat-lien .ico { width: 18px; height: 18px; }
+  .lat-pied .btn-theme { justify-self: start; background: transparent; color: #C9D4E2; border-color: rgba(255, 255, 255, .3); }
+  .lat-compte-mail { color: #7F93AB; font-size: .78rem; overflow-wrap: anywhere; }
+}
