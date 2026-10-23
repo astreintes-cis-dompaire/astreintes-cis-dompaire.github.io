@@ -9,11 +9,11 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
-import { astreintesGroupees, semainesDe, libellePeriode, texteNotifPlanning, parseYmd, ymd, fmtJour, resumePlanning } from './dates.js';
+import { astreintesGroupees, semainesDe, libellePeriode, texteNotifPlanning, parseYmd, ymd, fmtJour, resumePlanning, addDays, libelleGarde, texteRemplacement, dateHeure } from './dates.js';
 
 const ESSAI = process.env.ESSAI === '1';
 const SITE = (process.env.SITE_URL || '').trim().replace(/\/?$/, '/');
-const RAPPELS_DEFAUT = { saisie: true, joursAvant: [7, 3, 1], heure: 18, publication: true, debut: true };
+const RAPPELS_DEFAUT = { saisie: true, joursAvant: [7, 3, 1], heure: 18, publication: true, debut: true, garde: true };
 const HEURE_DEBUT_ASTREINTE = 9; // le rappel « astreinte aujourd'hui » part le matin
 
 if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
@@ -161,6 +161,94 @@ async function principal() {
     if (n) faits.push(`début d’astreinte (${n})`);
   }
 
+  // 4. Garde postée du samedi : le lundi à partir de 8h, chacun est invité à dire s'il est dispo.
+  // Si le programme n'a pas pu tourner le lundi, la question part le mardi ou le mercredi.
+  const jourSemaine = parseYmd(jour).getDay();
+  if (rap.garde && jourSemaine >= 1 && jourSemaine <= 3 && heure >= 8 && heure <= 21) {
+    const samedi = ymd(addDays(parseYmd(jour), 6 - jourSemaine));
+    const cle = `garde-${samedi}`;
+    if (!envois[cle]) {
+      for (const p of pompiers) {
+        if (p.gardeSamedi?.[samedi] !== undefined) continue;
+        aEnvoyer.push({
+          pompier: p,
+          title: 'Garde postée de samedi',
+          body: `Garde postée ${libelleGarde(samedi)} : si tu es dispo, touche ici pour le signaler au chef (facultatif).`,
+          tag: cle,
+          ancre: 'garde',
+        });
+      }
+      envois[cle] = new Date().toISOString();
+      faits.push(`garde du samedi ${samedi}`);
+    }
+  }
+
+  // Téléphones du chef (bouton « Recevoir les alertes » de l'onglet Remplacements).
+  const chefTel = { id: 'chef', prenom: 'Chef', nom: '', notifs: (await db.doc('chef/notifs').get()).data()?.tokens || [] };
+
+  // 4 bis. Garde du samedi : le chef est prévenu de chaque volontaire ; les retenus, quand le chef envoie la garde.
+  {
+    for (const p of pompiers) {
+      for (const [s, oui] of Object.entries(p.gardeSamedi || {})) {
+        const cle = `garde-dispo-${s}-${p.id}`;
+        if (oui !== true || s < jour || envois[cle]) continue;
+        aEnvoyer.push({ pompier: chefTel, url: `${SITE}#chef-garde`, tag: `garde-dispo-${s}`, title: 'Dispo pour la garde du samedi', body: `${nom(p)} est dispo ${libelleGarde(s)}.` });
+        envois[cle] = new Date().toISOString();
+      }
+    }
+    const ge = cfg.gardeEnvoi;
+    const cleGe = ge?.le?.toMillis ? `garde-envoi-${ge.le.toMillis()}` : '';
+    if (cleGe && !envois[cleGe] && ge.samedi >= jour) {
+      for (const id of ge.ids || []) {
+        const p = pompiers.find((x) => x.id === id);
+        if (!p || envois[`garde-retenu-${ge.samedi}-${id}`]) continue;
+        aEnvoyer.push({ pompier: p, tag: `garde-${ge.samedi}`, ancre: 'garde', title: 'Garde postée : tu es retenu', body: `Tu es retenu pour la garde postée du ${libelleGarde(ge.samedi)}, à la caserne.` });
+        envois[`garde-retenu-${ge.samedi}-${id}`] = new Date().toISOString();
+      }
+      envois[cleGe] = new Date().toISOString();
+      faits.push(`garde composée ${ge.samedi}`);
+    }
+  }
+
+  // 5. Demandes de remplacement : le chef est prévenu de chaque nouvelle demande,
+  //    le pompier de la réponse, et le remplaçant quand la demande est acceptée.
+  //    Chaque envoi est noté dans la demande elle-même (notifChef, notifReponse).
+  const marques = []; // [id du pompier, chemin du champ, valeur]
+  const limiteGarde = new Date(Date.now() - 60 * 86400000);
+  let nRemp = 0;
+  for (const p of pompiers) {
+    for (const [rid, r] of Object.entries(p.remplacements || {})) {
+      if (!r || typeof r !== 'object') continue;
+      if (r.au && dateHeure(r.au) < limiteGarde) { marques.push([p.id, `remplacements.${rid}`, FieldValue.delete()]); continue; }
+      const quoi = texteRemplacement(r, cfg.heures);
+      if (r.statut === 'attente' && !r.notifChef) {
+        aEnvoyer.push({
+          pompier: chefTel, url: `${SITE}#chef-remplacements`, tag: `remplacement-${rid}`,
+          title: 'Demande de remplacement',
+          body: `${nom(p)} demande à être remplacé : ${quoi}${r.remplacantNom ? `, par ${r.remplacantNom}` : ', remplaçant à trouver'}.`,
+        });
+        marques.push([p.id, `remplacements.${rid}.notifChef`, true]);
+        nRemp++;
+      }
+      if ((r.statut === 'accepte' || r.statut === 'refuse') && !r.notifReponse) {
+        const ok = r.statut === 'accepte';
+        aEnvoyer.push({
+          pompier: p, tag: `remplacement-${rid}`, ancre: 'remplacement',
+          title: ok ? 'Remplacement accepté' : 'Remplacement refusé',
+          body: `${quoi} : ${ok ? 'le chef a accepté ta demande' : 'le chef a refusé ta demande'}${r.reponse ? `. « ${r.reponse} »` : '.'}`,
+        });
+        const q = ok && r.remplacant ? pompiers.find((x) => x.id === r.remplacant) : null;
+        if (q) aEnvoyer.push({ pompier: q, tag: `remplace-${rid}`, ancre: 'remplacement', title: 'Tu remplaces un collègue', body: `Tu remplaces ${nom(p)} : ${quoi}.` });
+        marques.push([p.id, `remplacements.${rid}.notifReponse`, true]);
+        nRemp++;
+      }
+    }
+    for (const [rid, r] of Object.entries(p.remplacementsRecus || {})) {
+      if (r?.au && dateHeure(r.au) < limiteGarde) marques.push([p.id, `remplacementsRecus.${rid}`, FieldValue.delete()]);
+    }
+  }
+  if (nRemp) faits.push(`remplacements (${nRemp})`);
+
   // Envoi : un message par téléphone enregistré.
   const messages = [];
   const cibles = [];
@@ -169,7 +257,7 @@ async function principal() {
       if (token === 'demo') continue;
       messages.push({
         token,
-        data: { title: m.title, body: m.body, url: lienDe(m.pompier.id), tag: m.tag, ...(m.planning ? { planning: m.planning } : {}) },
+        data: { title: m.title, body: m.body, url: `${m.url || lienDe(m.pompier.id)}${m.ancre ? `#${m.ancre}` : ''}`, tag: m.tag, ...(m.planning ? { planning: m.planning } : {}) },
         webpush: { headers: { Urgency: 'high', TTL: '86400' } },
       });
       cibles.push({ id: m.pompier.id, token, test: !!m.test });
@@ -196,10 +284,17 @@ async function principal() {
       });
     }
     // Téléphones désinstallés ou notifications retirées : on les oublie.
-    for (const [id, tokens] of morts) await db.doc(`pompiers/${id}`).update({ notifs: FieldValue.arrayRemove(...tokens) });
+    for (const [id, tokens] of morts) {
+      if (id === 'chef') await db.doc('chef/notifs').update({ tokens: FieldValue.arrayRemove(...tokens) });
+      else await db.doc(`pompiers/${id}`).update({ notifs: FieldValue.arrayRemove(...tokens) });
+    }
+    // Demandes de remplacement : notées comme prévenues (ou effacées, 60 jours après la fin).
+    const parPompier = new Map();
+    for (const [id, champ, v] of marques) parPompier.set(id, { ...(parPompier.get(id) || {}), [champ]: v });
+    for (const [id, champs] of parPompier) await db.doc(`pompiers/${id}`).update(champs);
   }
 
-  const sansTelephone = new Set(aEnvoyer.filter((m) => !(m.pompier.notifs || []).some((t) => t !== 'demo')).map((m) => m.pompier.id)).size;
+  const sansTelephone = new Set(aEnvoyer.filter((m) => m.pompier.id !== 'chef' && !(m.pompier.notifs || []).some((t) => t !== 'demo')).map((m) => m.pompier.id)).size;
   const bilan = aEnvoyer.length
     ? `${faits.join(', ')} : ${reussis} notification${reussis > 1 ? 's' : ''} envoyée${reussis > 1 ? 's' : ''}${sansTelephone ? `, ${sansTelephone} pompier${sansTelephone > 1 ? 's' : ''} sans rappels activés` : ''}.`
     : 'Rien à envoyer à ce passage.';

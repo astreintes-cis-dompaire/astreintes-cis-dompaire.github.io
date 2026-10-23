@@ -761,12 +761,12 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
   .ch-compte-mobile { display: block; text-align: center; color: var(--discret); font-size: .85rem; padding: 8px 0; }
 
   .barre-bas {
-    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
     background: var(--surface); border-top: 1px solid var(--trait); padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
     box-shadow: 0 -4px 16px rgba(18, 27, 37, .08);
   }
   .bb { border: 0; background: none; color: var(--discret); font: inherit; font-size: .7rem; font-weight: 600; display: grid; justify-items: center; gap: 3px; padding: 5px 0; cursor: pointer; position: relative; border-radius: 12px; min-width: 0; }
-  .bb .ico { width: 24px; height: 24px; padding: 2px 10px; box-sizing: content-box; border-radius: 99px; transition: background-color .15s; }
+  .bb .ico { width: 24px; height: 24px; padding: 2px 8px; box-sizing: content-box; border-radius: 99px; transition: background-color .15s; }
   .bb.actif { color: var(--marine); }
   .bb.actif .ico { background: var(--marine-doux); }
   .bb-badge { position: absolute; top: 1px; left: calc(50% + 8px); background: var(--signal); color: var(--sur-signal); font-size: .62rem; line-height: 1; border-radius: 99px; padding: 3px 5px; }
@@ -811,7 +811,9 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 /* =================== POMPIER : rubriques en bas =================== */
 .pp[data-onglet="accueil"] [data-tab]:not([data-tab="accueil"]),
 .pp[data-onglet="dispos"] [data-tab]:not([data-tab="dispos"]),
-.pp[data-onglet="planning"] [data-tab]:not([data-tab="planning"]) { display: none !important; }
+.pp[data-onglet="planning"] [data-tab]:not([data-tab="planning"]),
+.pp[data-onglet="garde"] [data-tab]:not([data-tab="garde"]),
+.pp[data-onglet="remplacement"] [data-tab]:not([data-tab="remplacement"]) { display: none !important; }
 .pp { padding: 0 16px calc(150px + env(safe-area-inset-bottom, 0px)); gap: 18px; }
 .pp-tete { margin: 0 -16px; padding: 16px 16px 18px; background: var(--tete); color: var(--tete-texte); border-radius: 0 0 22px 22px; }
 .pp-tete .marque-centre { color: inherit; opacity: .8; border-color: currentColor; }
@@ -830,12 +832,12 @@ div.etapes { display: grid; gap: 16px; padding-left: 0; }
 .astreinte:not(:first-child) .astreinte-date { background: var(--marine-doux); }
 .astreinte:not(:first-child) .astreinte-quand { color: var(--discret); }
 .pp-nav {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
   background: var(--surface); border-top: 1px solid var(--trait); padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -4px 16px rgba(18, 27, 37, .08);
 }
 .pp-nav .bb { border: 0; background: none; color: var(--discret); font: inherit; font-size: .74rem; font-weight: 600; display: grid; justify-items: center; gap: 3px; padding: 5px 0; cursor: pointer; }
-.pp-nav .bb .ico { width: 24px; height: 24px; padding: 2px 14px; box-sizing: content-box; border-radius: 99px; }
+.pp-nav .bb .ico { width: 24px; height: 24px; padding: 2px 12px; box-sizing: content-box; border-radius: 99px; }
 .pp-nav .bb.actif { color: var(--marine); }
 .pp-nav .bb.actif .ico { background: var(--marine-doux); }
 .pp-barre { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); z-index: 24; }
@@ -1080,3 +1082,153 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .sms-liste { list-style: none; margin: 0; padding: 0; }
 .sms-ligne { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--trait); }
 #sms-texte { width: 100%; }
+
+/* Garde postée du samedi */
+.pp-carte-garde { border-color: var(--marine); }
+.garde-tete { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 10px; align-items: center; justify-items: start; }
+.garde-tete h2 { font-size: 1.4rem; text-align: center; justify-self: center; }
+.garde-tete .pastille, .garde-tete .btn-lien { grid-column: 1 / -1; justify-self: center; }
+.garde-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.garde-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 8px 12px; border: 1px solid var(--trait); border-radius: 12px; background: var(--surface); }
+.garde-ligne strong { flex: 1 1 auto; }
+.garde-ligne .indic-detail { font-size: .8rem; }
+.garde-oui .garde-ligne { border-color: var(--ok); background: var(--ok-doux); }
+.garde-noms { margin: 0; color: var(--discret); }
+.bb-badge.bb-badge-ok { background: var(--ok); color: var(--surface); }
+
+/* Demandes de remplacement */
+.pastille-attente { background: var(--attention-doux); color: var(--attention); }
+.pastille-non { background: var(--signal-doux); color: var(--signal); }
+.pp-nav .bb { position: relative; min-width: 0; font-size: .68rem; }
+.pp-nav .bb span { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.pp-nav .bb-badge { position: absolute; top: 0; left: calc(50% + 8px); background: var(--signal); color: var(--sur-signal); font-size: .65rem; font-weight: 800; line-height: 1; border-radius: 99px; padding: 3px 6px; }
+.pp-remp { display: grid; gap: 14px; }
+#rp-form { display: grid; gap: 14px; }
+.rp-champ { display: grid; gap: 8px; }
+.rp-champ > legend, .rp-champ > label { font-weight: 700; }
+.rp-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rp-dates input { width: 100%; min-width: 0; }
+.rp-deja { color: var(--attention); font-weight: 600; }
+.rp-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.rp-demande { gap: 6px; }
+.rp-ligne { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
+.rp-demande .btn { justify-self: start; }
+@media (max-width: 420px) { .rp-dates { grid-template-columns: 1fr; } }
+
+/* Onglet Remplacements du chef */
+.remp { display: grid; gap: 16px; max-width: 860px; }
+.remp-alertes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.remp-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.remp-carte { display: grid; gap: 8px; }
+.remp-carte.attente { border-color: var(--attention); }
+.remp-tete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
+.remp-tete strong { font-size: 1.05rem; }
+.remp-qui { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: 0; }
+.remp-qui dt { color: var(--discret); }
+.remp-qui dd { margin: 0; }
+.remp-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.remp-codes { color: var(--discret); font-size: .85rem; }
+.remp-avert { color: var(--attention); font-size: .9rem; }
+.compte-alerte { background: var(--signal); color: var(--sur-signal); font-weight: 700; }
+.remp-histo summary { cursor: pointer; }
+.remp-histo summary h2 { display: inline; }
+.remp-histo[open] summary { margin-bottom: 12px; }
+.garde-choix { cursor: pointer; }
+.garde-choix input { width: 20px; height: 20px; accent-color: var(--marine); }
+.garde-choix.on { border-color: var(--marine); background: var(--marine-doux); }
+.garde-retenus { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.garde-retenus .pastille { padding-right: 4px; }
+.btn-x { border: 0; background: none; color: inherit; cursor: pointer; padding: 2px; display: inline-flex; }
+.btn-x .ico { width: 16px; height: 16px; }
+.btn-simu { background: transparent; color: inherit; border-color: color-mix(in srgb, currentColor 40%, transparent); }
+
+/* Accueil du pompier : tuiles */
+.tuiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tuile {
+  display: grid; align-content: start; justify-items: start; gap: 6px; text-align: left; min-height: 122px;
+  padding: 14px; border-radius: 18px; border: 1.5px solid var(--trait); background: var(--surface); color: var(--encre);
+  font: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(18, 27, 37, .06); transition: transform .1s;
+}
+.tuile:active { transform: scale(.97); }
+.tuile strong { font-family: var(--f-titre); font-size: 1.2rem; line-height: 1.1; }
+.tuile-etat { font-size: .85rem; color: var(--discret); display: inline-flex; align-items: center; gap: 4px; }
+.tuile-etat .ico { width: 16px; height: 16px; }
+.tuile-ico { display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; background: var(--marine-doux); color: var(--marine); }
+.tuile-ico .ico { width: 24px; height: 24px; }
+.tuile-ok { border-color: var(--ok); }
+.tuile-ok .tuile-ico { background: var(--ok-doux); color: var(--ok); }
+.tuile-ok .tuile-etat { color: var(--ok); font-weight: 600; }
+.tuile-alerte { border-color: var(--signal); background: var(--signal-doux); }
+.tuile-alerte .tuile-ico { background: var(--signal); color: var(--sur-signal); }
+.tuile-alerte .tuile-etat { color: var(--signal); font-weight: 600; }
+.tuile-accent { border-color: var(--attention); background: var(--attention-doux); }
+.tuile-accent .tuile-ico { background: var(--attention); color: var(--sur-signal); }
+.tuile-marine .tuile-ico { background: var(--marine); color: var(--surface); }
+.astreinte-remp { grid-column: 2; justify-self: start; margin-top: 4px; }
+
+/* =================== POMPIER : accueil à gros boutons, une page par bouton =================== */
+.pp[data-onglet="general"] [data-tab]:not([data-tab="general"]),
+.pp[data-onglet="rappels"] [data-tab]:not([data-tab="rappels"]) { display: none !important; }
+.pp { padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); gap: 16px; }
+.pp[data-onglet="dispos"] { padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); }
+.pp-barre { bottom: 0; }
+.demo-telephone .pp-barre { bottom: 0; }
+.pp-tete { padding: 10px 16px; border-radius: 0 0 18px 18px; border-bottom: 4px solid var(--signal); }
+.pp-tete .marque-logo { width: 34px; height: 34px; }
+.pp-tete .marque-mot { font-size: 1.05rem; }
+/* Pages : photo en fondu sous la couleur du bouton */
+.pp-c-dispos { --c-tuile: #C62828; }
+.pp-c-planning { --c-tuile: #1C3657; }
+.pp-c-samedi { --c-tuile: #1E7B4F; }
+.pp-c-remplacer { --c-tuile: #B86A00; }
+.pp-tete-page { position: relative; isolation: isolate; min-height: 118px; display: grid; align-content: space-between; gap: 14px; padding: 12px 16px 14px;
+  background-color: var(--c-tuile); background-size: cover; background-position: center 35%; border-bottom: 6px solid var(--c-tuile); color: #fff; }
+.pp-tete-page::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c-tuile) 72%, transparent), color-mix(in srgb, var(--c-tuile) 94%, transparent)); }
+.pp-retour { justify-self: start; display: inline-flex; align-items: center; gap: 4px; border: 0; border-radius: 99px; padding: 7px 14px 7px 8px;
+  background: rgba(0, 0, 0, .28); color: #fff; font: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; }
+.pp-retour .ico { width: 20px; height: 20px; }
+.pp-tete-titre { display: flex; align-items: center; gap: 10px; margin: 0; font-family: var(--f-titre); font-size: 1.6rem; line-height: 1.1; text-transform: uppercase; color: #fff; }
+.pp-tete-ico { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: rgba(255, 255, 255, .2); }
+.pp-tete-ico .ico { width: 22px; height: 22px; }
+/* Accueil */
+.pp-bonjour { font-size: 1.15rem; line-height: 1.4; margin: 0; }
+.pp-pas-moi { margin: 2px 0 0; }
+.pp-installer { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; border: 0; border-radius: 16px; padding: 12px 14px;
+  background: #C62828; color: #fff; font: inherit; cursor: pointer; box-shadow: 0 4px 0 #8E1C1C; animation: pp-pulse 2.4s ease-in-out infinite; }
+.pp-installer > span:nth-child(2) { flex: 1; display: grid; gap: 2px; }
+.pp-installer strong { font-size: 1.05rem; }
+.pp-installer > span:nth-child(2) > span { font-size: .88rem; opacity: .92; }
+.pp-installer-ico { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: #fff; color: #C62828; }
+.pp-installer > .ico { width: 22px; height: 22px; }
+@keyframes pp-pulse { 50% { transform: scale(1.015); } }
+@media (prefers-reduced-motion: reduce) { .pp-installer { animation: none; } }
+.tuiles { gap: 12px; }
+.tuile { position: relative; isolation: isolate; overflow: hidden; min-height: 168px; align-content: end; gap: 6px; padding: 14px 12px 20px; border: 0; color: #fff;
+  background-color: var(--c-tuile); background-size: cover; background-position: center; box-shadow: 0 6px 14px rgba(18, 27, 37, .2); }
+.tuile::before { content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c-tuile) 70%, transparent) 0%, color-mix(in srgb, var(--c-tuile) 90%, transparent) 70%, var(--c-tuile) 100%); }
+.tuile::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 7px; background: #F2C200; }
+.tuile strong { font-size: 1.4rem; line-height: 1.02; text-transform: uppercase; letter-spacing: .02em; }
+.tuile-ico { position: absolute; top: 12px; left: 12px; width: 40px; height: 40px; border-radius: 12px; background: rgba(255, 255, 255, .22); color: #fff; }
+.tuile-etat { color: #fff; opacity: .92; font-weight: 600; font-size: .86rem; }
+.tuile-etat.fort { opacity: 1; justify-self: start; background: #fff; color: var(--c-tuile); border-radius: 99px; padding: 3px 10px; }
+.pp-credit { margin: 0; font-size: .7rem; color: var(--discret); text-align: center; }
+/* Planning : cartes des périodes, puis tout le planning */
+.pp-mois { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; border: 1px solid var(--trait); border-radius: 16px; padding: 12px 14px;
+  background: var(--surface); color: var(--encre); font: inherit; cursor: pointer; margin-top: 8px; }
+.pp-mois + .pp-titre, .pp-carte + .pp-titre { margin-top: 18px; }
+.pp-mois-ico { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--marine); color: var(--marine-texte); }
+.pp-mois-texte { flex: 1; display: grid; gap: 4px; justify-items: start; }
+.pp-mois > .ico { width: 24px; height: 24px; color: var(--marine); }
+.pastille-marine { background: var(--marine-doux); color: var(--marine); }
+.pg-sem.pg-moi { border-left: 5px solid var(--signal); }
+.pg-sem-tete { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.pg-sem-tete span { color: var(--discret); font-size: .85rem; }
+.pg-sem-tete .pastille { color: inherit; }
+.pg-g { grid-template-columns: 7.5em 1fr; align-items: baseline; }
+.pg-g > span { color: var(--discret); }
+.pg-g li.moi { background: var(--signal); color: #fff; font-weight: 700; }
+.pp-tete .pp-tete-ligne { flex-wrap: nowrap; }
+.pp-tete .pp-tete-ligne .btn-theme { font-size: 0; gap: 0; padding: 6px; min-height: 0; }
+.pp-tete .pp-tete-ligne .btn-theme .ico { width: 20px; height: 20px; }

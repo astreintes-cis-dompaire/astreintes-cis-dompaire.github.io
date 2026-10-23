@@ -166,3 +166,77 @@ export function resumePlanning(periodeId, pompiers, n = 4) {
   }
   return { per: periodeId, sem };
 }
+
+// ---------- Garde postée du samedi (13h → 19h à la caserne) ----------
+// Les pompiers répondent oui / non à partir du lundi 8h pour le samedi de la même semaine,
+// jusqu'au samedi 13h. Réponses rangées par date du samedi : pompier.gardeSamedi['AAAA-MM-JJ'] = true | false.
+export const GARDE = { debut: '13:00', fin: '19:00', ouvertureJour: -5, ouvertureHeure: '08:00', garder: 8 };
+
+// Le samedi concerné à l'instant donné. Le pompier passe au samedi suivant à 13h (début de la garde),
+// le chef à 19h (fin de la garde), pour voir qui vient pendant qu'elle a lieu.
+export function samediGarde(maintenant = new Date(), bascule = GARDE.debut) {
+  let sam = addDays(maintenant, (6 - maintenant.getDay() + 7) % 7);
+  if (maintenant >= avecHeure(sam, bascule)) sam = addDays(sam, 7);
+  return infosGarde(sam, maintenant);
+}
+
+export function infosGarde(samedi, maintenant = new Date()) {
+  const sam = typeof samedi === 'string' ? parseYmd(samedi) : samedi;
+  const ouverture = avecHeure(addDays(sam, GARDE.ouvertureJour), GARDE.ouvertureHeure);
+  const debut = avecHeure(sam, GARDE.debut), fin = avecHeure(sam, GARDE.fin);
+  return {
+    id: ymd(sam), samedi: sam, ouverture, debut, fin,
+    etat: maintenant < ouverture ? 'bientot' : maintenant < debut ? 'ouvert' : maintenant < fin ? 'en-cours' : 'passe',
+  };
+}
+
+// « samedi 25 octobre, 13h → 19h »
+const MOIS_LONGS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+export function libelleGarde(samedi) {
+  const sam = typeof samedi === 'string' ? parseYmd(samedi) : samedi;
+  return `samedi ${sam.getDate()} ${MOIS_LONGS[sam.getMonth()]}, ${fmtHeure(GARDE.debut)} → ${fmtHeure(GARDE.fin)}`;
+}
+
+// Réponses gardées sur la fiche : les dernières semaines seulement.
+export function gardesAvecReponse(gardes, samediId, dispo) {
+  const tout = { ...(gardes || {}), [samediId]: dispo };
+  return Object.fromEntries(Object.keys(tout).sort().slice(-GARDE.garder).map((k) => [k, tout[k]]));
+}
+
+// ---------- Demandes de remplacement ----------
+// Une demande vise une astreinte publiée (bloc « 2WE », « 2SE » ou « 2TOUT ») d'une période,
+// en entier ou en partie : du / au sont des heures locales « 2026-11-13T18:00 ».
+
+export function dateHeure(s) {
+  const [j, h] = String(s || '').split('T');
+  return avecHeure(parseYmd(j), h || '00:00');
+}
+
+export function versDateHeure(d) {
+  return `${ymd(d)}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+export function fmtJourHeure(d) {
+  return `${fmtJour(d)} ${fmtHeure(`${d.getHours()}:${d.getMinutes()}`)}`;
+}
+
+// L'astreinte visée, au format de astreintesGroupees : { id, ids, type, label, debut, fin }.
+export function astreinteDuBloc(periodeId, heures, bloc) {
+  const cr = creneaux(periodeId, heures, 5);
+  const m = /^(\d)(WE|SE|TOUT)$/.exec(bloc || '');
+  if (!m) return null;
+  if (m[2] !== 'TOUT') { const c = cr.find((x) => x.id === bloc); return c ? { ...c, ids: [bloc] } : null; }
+  return astreintesGroupees(periodeId, heures, [`${m[1]}WE`, `${m[1]}SE`], 5)[0] || null;
+}
+
+// « du ven 13 nov 18h au lun 16 nov 5h »
+export function plageRemplacement(r) {
+  return `du ${fmtJourHeure(dateHeure(r.du))} au ${fmtJourHeure(dateHeure(r.au))}`;
+}
+
+// « Week-end du 13 nov (en partie : du sam 14 nov 8h au dim 15 nov 20h) »
+export function texteRemplacement(r, heures) {
+  const a = astreinteDuBloc(r.per, heures, r.bloc);
+  const nom = a ? libelleCreneau(a) : 'Astreinte';
+  return r.partiel ? `${nom}, en partie : ${plageRemplacement(r)}` : nom;
+}
