@@ -1439,3 +1439,13 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .table-qualifs input { min-height: 34px; padding: 4px 8px; }
 .table-qualifs .nombre { width: 50px; text-align: center; }
 .table-qualifs .btn-icone { min-height: 28px; width: 28px; }
+.sous-onglets { justify-self: start; }
+.sous-onglets .vue .ico { width: 16px; height: 16px; }
+/* Réglages en sous-onglets : une seule partie visible à la fois */
+.reglages[data-sous] [data-sec] { display: none; }
+.reglages[data-sous="periode"] [data-sec="periode"], .reglages[data-sous="centre"] [data-sec="centre"],
+.reglages[data-sous="rappels"] [data-sec="rappels"], .reglages[data-sous="besoins"] [data-sec="besoins"] { display: grid; }
+.reglages[data-sous] .reg-haut { display: block; }
+.reglages[data-sous] .reg-carte { max-width: 640px; }
+.sous-onglets { flex-wrap: wrap; }
+.sous-onglets .vue .ico, .sous-onglets .vue svg { fill: none; }
