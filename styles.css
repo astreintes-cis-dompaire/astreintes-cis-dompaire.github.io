@@ -1449,3 +1449,5 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .reglages[data-sous] .reg-carte { max-width: 640px; }
 .sous-onglets { flex-wrap: wrap; }
 .sous-onglets .vue .ico, .sous-onglets .vue svg { fill: none; }
+.rap-groupe { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muet, #667); margin: .9rem 0 .1rem; }
+.rap-groupe:first-of-type { margin-top: .3rem; }

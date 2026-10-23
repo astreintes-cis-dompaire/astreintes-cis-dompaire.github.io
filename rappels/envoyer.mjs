@@ -13,7 +13,7 @@ import { astreintesGroupees, semainesDe, libellePeriode, texteNotifPlanning, par
 
 const ESSAI = process.env.ESSAI === '1';
 const SITE = (process.env.SITE_URL || '').trim().replace(/\/?$/, '/');
-const RAPPELS_DEFAUT = { saisie: true, joursAvant: [7, 3, 1], heure: 18, publication: true, debut: true, garde: true };
+const RAPPELS_DEFAUT = { ouverture: true, saisie: true, joursAvant: [7, 3, 1], heure: 18, publication: true, debut: true, garde: true, gardeReponse: true, rempReponse: true, rempDebut: true };
 const HEURE_DEBUT_ASTREINTE = 9; // le rappel « astreinte aujourd'hui » part le matin
 
 if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
@@ -55,6 +55,22 @@ async function principal() {
 
   const aEnvoyer = []; // { pompier, title, body, tag }
   const faits = [];
+
+  // 0. Ouverture de la saisie : chacun est invité à donner ses dispos pour la nouvelle période, en journée.
+  //    Au tout premier passage, la période déjà ouverte est seulement notée (personne n'est dérangé).
+  // La dernière période annoncée est gardée dans le journal (champ ouverture).
+  let ouverture = journal.ouverture || cfg.periode;
+  if (ouverture !== cfg.periode && !cfg.verrouille && heure >= 8 && heure <= 21) {
+    if (rap.ouverture) {
+      const limite = cfg.dateLimite ? `, avant le ${fmtJour(parseYmd(cfg.dateLimite))}` : '';
+      for (const p of pompiers) {
+        if (p.rythme === 'aucun' || p.dispos?.[cfg.periode]) continue;
+        aEnvoyer.push({ pompier: p, title: 'Donne tes dispos d’astreinte', body: `La période ${libellePeriode(cfg.periode)} est ouverte : donne tes dispos${limite}.`, tag: `saisie-${cfg.periode}` });
+      }
+      faits.push(`ouverture ${cfg.periode}`);
+    }
+    ouverture = cfg.periode;
+  }
 
   // 1. Relance des pompiers sans réponse, les jours choisis avant la date limite.
   if (rap.saisie && !cfg.verrouille && cfg.dateLimite && heure >= rap.heure) {
@@ -203,6 +219,7 @@ async function principal() {
     const ge = cfg.gardeEnvoi;
     const cleGe = ge?.le?.toMillis ? `garde-envoi-${ge.le.toMillis()}` : '';
     if (cleGe && !envois[cleGe] && ge.notif === false) envois[cleGe] = 'sans notification';
+    else if (cleGe && !envois[cleGe] && !rap.gardeReponse) envois[cleGe] = 'reponses garde coupees';
     else if (cleGe && !envois[cleGe] && ge.samedi >= jour) {
       const mot = String(ge.message || '').trim().slice(0, 200);
       for (const id of ge.ids || []) {
@@ -210,6 +227,12 @@ async function principal() {
         if (!p || envois[`garde-retenu-${ge.samedi}-${id}`]) continue;
         aEnvoyer.push({ pompier: p, tag: `garde-${ge.samedi}`, ancre: 'garde', title: 'Garde postée : tu es retenu', body: `Tu es retenu pour la garde postée du ${libelleGarde(ge.samedi)}, à la caserne.${mot ? ` ${mot}` : ''}` });
         envois[`garde-retenu-${ge.samedi}-${id}`] = new Date().toISOString();
+      }
+      // Les volontaires non retenus sont prévenus aussi, une seule fois.
+      for (const p of pompiers) {
+        if (p.gardeSamedi?.[ge.samedi] !== true || (ge.ids || []).includes(p.id) || envois[`garde-retenu-${ge.samedi}-${p.id}`] || envois[`garde-non-${ge.samedi}-${p.id}`]) continue;
+        aEnvoyer.push({ pompier: p, tag: `garde-${ge.samedi}`, ancre: 'garde', title: 'Garde postée : pas retenu', body: `Merci pour ta dispo. Tu n’es pas retenu pour la garde postée du ${libelleGarde(ge.samedi)}.` });
+        envois[`garde-non-${ge.samedi}-${p.id}`] = new Date().toISOString();
       }
       envois[cleGe] = new Date().toISOString();
       faits.push(`garde composée ${ge.samedi}`);
@@ -236,7 +259,9 @@ async function principal() {
         marques.push([p.id, `remplacements.${rid}.notifChef`, true]);
         nRemp++;
       }
-      if ((r.statut === 'accepte' || r.statut === 'refuse') && !r.notifReponse) {
+      if ((r.statut === 'accepte' || r.statut === 'refuse') && !r.notifReponse && !rap.rempReponse) {
+        marques.push([p.id, `remplacements.${rid}.notifReponse`, true]);
+      } else if ((r.statut === 'accepte' || r.statut === 'refuse') && !r.notifReponse) {
         const ok = r.statut === 'accepte';
         aEnvoyer.push({
           pompier: p, tag: `remplacement-${rid}`, ancre: 'remplacement',
@@ -249,7 +274,7 @@ async function principal() {
         if (q && r.du && maintenant >= new Date(dateHeure(r.du) - 30 * 60000)) marques.push([p.id, `remplacements.${rid}.notifRappel`, true]);
         marques.push([p.id, `remplacements.${rid}.notifReponse`, true]);
         nRemp++;
-      } else if (r.statut === 'accepte' && r.remplacant && r.du && r.au && !r.notifRappel) {
+      } else if (r.statut === 'accepte' && r.remplacant && r.du && r.au && !r.notifRappel && rap.rempDebut) {
         // Rappel au remplaçant, au plus 30 minutes avant le début de ce qu'il remplace (envoyé tant que ce n'est pas fini,
         // au cas où le programme a tourné en retard).
         const debut = dateHeure(r.du);
@@ -326,7 +351,7 @@ async function principal() {
     // On ne garde que les 200 dernières traces d'envoi.
     const cles = Object.keys(envois).sort((a, b) => String(envois[a]).localeCompare(String(envois[b])));
     for (const k of cles.slice(0, Math.max(0, cles.length - 200))) delete envois[k];
-    const champs = { envois, derniereExecution: FieldValue.serverTimestamp(), dernierBilan: bilan };
+    const champs = { envois, ouverture, derniereExecution: FieldValue.serverTimestamp(), dernierBilan: bilan };
     if (aEnvoyer.length) Object.assign(champs, { dernierEnvoi: bilan, dernierEnvoiLe: FieldValue.serverTimestamp() });
     if (cleTest && !bilanTest) {
       const ok = testRes.filter((x) => x === 'ok').length;
