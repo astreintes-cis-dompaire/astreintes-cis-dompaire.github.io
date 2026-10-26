@@ -1451,3 +1451,18 @@ button.nom-commentaire { border: 0; background: none; padding: 0; text-align: le
 .sous-onglets .vue .ico, .sous-onglets .vue svg { fill: none; }
 .rap-groupe { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muet, #667); margin: .9rem 0 .1rem; }
 .rap-groupe:first-of-type { margin-top: .3rem; }
+/* « Retour » toujours visible : posé au-dessus du bandeau, il reste collé en haut quand on défile */
+.pp-retour-fixe { position: sticky; top: 0; height: 0; z-index: 40; margin: 0 -16px -18px; }
+.pp-retour-fixe[hidden] { display: none; }
+.pp-retour-fixe .pp-retour { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); left: 16px;
+  background: color-mix(in srgb, var(--c-tuile, #1C3657) 88%, #000); box-shadow: 0 2px 8px rgba(0, 0, 0, .3); }
+.pp-retour-place { display: block; height: 36px; }
+/* Garde postée : personnel d'astreinte ce jour-là, personnes extérieures */
+.garde-ast { display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; padding: 1px 7px 1px 4px; border-radius: 99px;
+  background: #FDECEA; color: #B3261E; font-size: .75rem; font-weight: 700; vertical-align: middle; }
+.garde-ast .ico { width: 14px; height: 14px; }
+.garde-ast-tete { font-size: .85rem; padding: 3px 10px 3px 6px; }
+.garde-ast-tete .ico { width: 16px; height: 16px; }
+.pastille-ext { background: var(--fond-2, #EEF1F5); border: 1px dashed currentColor; }
+.garde-ext-ligne { display: flex; gap: 8px; }
+.garde-ext-ligne input { flex: 1; min-width: 0; }

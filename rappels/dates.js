@@ -167,34 +167,54 @@ export function resumePlanning(periodeId, pompiers, n = 4) {
   return { per: periodeId, sem };
 }
 
-// ---------- Garde postée du samedi (13h → 19h à la caserne) ----------
-// Les pompiers répondent oui / non à partir du lundi 8h pour le samedi de la même semaine,
-// jusqu'au samedi 13h. Réponses rangées par date du samedi : pompier.gardeSamedi['AAAA-MM-JJ'] = true | false.
-export const GARDE = { debut: '13:00', fin: '19:00', ouvertureJour: -5, ouvertureHeure: '08:00', garder: 8 };
+// ---------- Garde postée (mercredi et samedi, 13h → 19h à la caserne) ----------
+// Les pompiers se signalent dispo à partir du lundi 8h pour le mercredi et le samedi de la même semaine,
+// jusqu'au début de chaque garde. Réponses rangées par date : pompier.gardeSamedi['AAAA-MM-JJ'] = true | false
+// (le nom du champ date de l'époque où seule la garde du samedi existait).
+export const GARDE = { debut: '13:00', fin: '19:00', ouvertureHeure: '08:00', garder: 8, jours: [3, 6] };
+const JOURS_LONGS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
 
-// Le samedi concerné à l'instant donné. Le pompier passe au samedi suivant à 13h (début de la garde),
-// le chef à 19h (fin de la garde), pour voir qui vient pendant qu'elle a lieu.
-export function samediGarde(maintenant = new Date(), bascule = GARDE.debut) {
-  let sam = addDays(maintenant, (6 - maintenant.getDay() + 7) % 7);
-  if (maintenant >= avecHeure(sam, bascule)) sam = addDays(sam, 7);
-  return infosGarde(sam, maintenant);
+// La garde concernée à l'instant donné (mercredi ou samedi). Le pompier passe à la suivante à 13h (début),
+// le chef à 19h (fin), pour voir qui vient pendant qu'elle a lieu.
+export function gardeSuivante(maintenant = new Date(), bascule = GARDE.debut) {
+  for (let k = 0; k < 8; k++) {
+    const j = addDays(maintenant, k);
+    if (GARDE.jours.includes(j.getDay()) && maintenant < avecHeure(j, bascule)) return infosGarde(j, maintenant);
+  }
+  return infosGarde(addDays(maintenant, 7), maintenant);
+}
+export const samediGarde = gardeSuivante;
+
+// Garde précédente / suivante (mercredi ↔ samedi).
+export function gardeVoisine(id, sens) {
+  let d = parseYmd(id);
+  do d = addDays(d, sens); while (!GARDE.jours.includes(d.getDay()));
+  return ymd(d);
 }
 
-export function infosGarde(samedi, maintenant = new Date()) {
-  const sam = typeof samedi === 'string' ? parseYmd(samedi) : samedi;
-  const ouverture = avecHeure(addDays(sam, GARDE.ouvertureJour), GARDE.ouvertureHeure);
-  const debut = avecHeure(sam, GARDE.debut), fin = avecHeure(sam, GARDE.fin);
+// Pour le pompier : les gardes de la semaine encore à venir (mercredi et samedi, ou samedi seul après mercredi 13h).
+export function gardesAVenir(maintenant = new Date()) {
+  const g = gardeSuivante(maintenant);
+  if (g.jour !== 3) return [g];
+  return [g, infosGarde(addDays(g.date, 3), maintenant)];
+}
+
+export function infosGarde(jour, maintenant = new Date()) {
+  const d = typeof jour === 'string' ? parseYmd(jour) : jour;
+  const lundi = addDays(d, 1 - (d.getDay() || 7));
+  const ouverture = avecHeure(lundi, GARDE.ouvertureHeure);
+  const debut = avecHeure(d, GARDE.debut), fin = avecHeure(d, GARDE.fin);
   return {
-    id: ymd(sam), samedi: sam, ouverture, debut, fin,
+    id: ymd(d), date: d, samedi: d, jour: d.getDay(), nomJour: JOURS_LONGS[d.getDay()], ouverture, debut, fin,
     etat: maintenant < ouverture ? 'bientot' : maintenant < debut ? 'ouvert' : maintenant < fin ? 'en-cours' : 'passe',
   };
 }
 
 // « samedi 25 octobre, 13h → 19h »
 const MOIS_LONGS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-export function libelleGarde(samedi) {
-  const sam = typeof samedi === 'string' ? parseYmd(samedi) : samedi;
-  return `samedi ${sam.getDate()} ${MOIS_LONGS[sam.getMonth()]}, ${fmtHeure(GARDE.debut)} → ${fmtHeure(GARDE.fin)}`;
+export function libelleGarde(jour) {
+  const d = typeof jour === 'string' ? parseYmd(jour) : jour;
+  return `${JOURS_LONGS[d.getDay()]} ${d.getDate()} ${MOIS_LONGS[d.getMonth()]}, ${fmtHeure(GARDE.debut)} → ${fmtHeure(GARDE.fin)}`;
 }
 
 // Réponses gardées sur la fiche : les dernières semaines seulement.
@@ -239,4 +259,11 @@ export function texteRemplacement(r, heures) {
   const a = astreinteDuBloc(r.per, heures, r.bloc);
   const nom = a ? libelleCreneau(a) : 'Astreinte';
   return r.partiel ? `${nom}, en partie : ${plageRemplacement(r)}` : nom;
+}
+
+// Le pompier est-il d'astreinte (planning publié) à cet instant ? Sert à repérer, pour la garde postée,
+// ceux qui sont déjà d'astreinte ce jour-là (on les privilégie par habitude).
+export function dAstreinteLe(cfg, p, quand) {
+  return Object.entries(cfg?.publie || {}).some(([per, ok]) => ok && Array.isArray(p.affectations?.[per])
+    && astreintesGroupees(per, cfg.heures, p.affectations[per], semainesDe(cfg, per)).some((c) => c.debut <= quand && quand < c.fin));
 }

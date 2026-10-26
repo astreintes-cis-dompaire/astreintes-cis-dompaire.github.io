@@ -166,10 +166,14 @@ async function principal() {
           if (ymd(c.debut) === jour) {
             aEnvoyer.push({
               pompier: p,
-              title: 'Astreinte aujourd’hui',
+              // Vendredi (semaine complète ou week-end) : rendez-vous à la caserne à 18h pour les vérifications.
+              // Lundi (semaine seule) : simple rappel pour le soir.
+              title: c.type === 'TOUT' || c.type === 'WE' ? 'Astreinte ce soir : vérifs à 18h' : 'Astreinte ce soir',
               body: c.type === 'TOUT'
-                ? 'Ta semaine complète d’astreinte commence ce soir et finit vendredi prochain.'
-                : `Ton astreinte ${c.label.toLowerCase()} commence ce soir et finit ${c.type === 'WE' ? 'lundi' : 'vendredi'} matin.`,
+                ? 'Tu débutes ton astreinte ce soir, pour toute la semaine (jusqu’à vendredi prochain). Rendez-vous à 18h à la caserne pour les vérifications hebdomadaires.'
+                : c.type === 'WE'
+                  ? 'Tu débutes ton astreinte du week-end ce soir (jusqu’à lundi matin). Rendez-vous à 18h à la caserne pour les vérifications hebdomadaires.'
+                  : 'Tu es d’astreinte ce soir, pour la semaine (jusqu’à vendredi matin).',
               tag: `debut-${per}-${c.id}`,
             });
             n++;
@@ -181,46 +185,53 @@ async function principal() {
     if (n) faits.push(`début d’astreinte (${n})`);
   }
 
-  // 4. Garde postée du samedi : le lundi à partir de 8h, chacun est invité à dire s'il est dispo.
-  // Si le programme n'a pas pu tourner le lundi, la question part le mardi ou le mercredi.
+  // 4. Garde postée (mercredi et samedi) : le lundi à partir de 8h, chacun est invité à dire s'il est dispo.
+  // Une seule notification pour les deux gardes de la semaine. Si le programme n'a pas pu tourner le lundi,
+  // elle part le mardi (mercredi et samedi) ou le mercredi après 13h (samedi seul).
   const jourSemaine = parseYmd(jour).getDay();
-  if (rap.garde && jourSemaine >= 1 && jourSemaine <= 3 && heure >= 8 && heure <= 21) {
-    const samedi = ymd(addDays(parseYmd(jour), 6 - jourSemaine));
-    const cle = `garde-${samedi}`;
-    if (!envois[cle]) {
+  if (rap.garde && jourSemaine >= 1 && jourSemaine <= 5 && heure >= 8 && heure <= 21) {
+    const lundi = addDays(parseYmd(jour), 1 - jourSemaine);
+    const cle = `garde-sem-${ymd(lundi)}`;
+    const samedi = ymd(addDays(lundi, 5));
+    const gardes = [ymd(addDays(lundi, 2)), samedi].filter((g) => maintenant < dateHeure(`${g}T13:00`));
+    if (!envois[cle] && !envois[`garde-${samedi}`] && gardes.length) {
+      const noms = gardes.map((g) => libelleGarde(g).split(',')[0]);
       for (const p of pompiers) {
-        if (p.gardeSamedi?.[samedi] !== undefined) continue;
+        if (gardes.every((g) => p.gardeSamedi?.[g] !== undefined)) continue;
         aEnvoyer.push({
           pompier: p,
-          title: 'Garde postée de samedi',
-          body: `Garde postée ${libelleGarde(samedi)} : si tu es dispo, touche ici pour le signaler au chef (facultatif).`,
+          title: 'Garde postée cette semaine',
+          body: `Garde postée ${noms.join(' et ')}, de 13h à 19h : si tu es dispo, touche ici pour le signaler au chef (facultatif).`,
           tag: cle,
           ancre: 'garde',
         });
       }
       envois[cle] = new Date().toISOString();
-      faits.push(`garde du samedi ${samedi}`);
+      faits.push(`garde postée ${gardes.join(', ')}`);
     }
   }
 
   // Téléphones du chef (bouton « Recevoir les alertes » de l'onglet Remplacements).
   const chefTel = { id: 'chef', prenom: 'Chef', nom: '', notifs: (await db.doc('chef/notifs').get()).data()?.tokens || [] };
 
-  // 4 bis. Garde du samedi : le chef est prévenu de chaque volontaire ; les retenus, quand le chef envoie la garde.
+  // 4 bis. Garde postée : le chef est prévenu de chaque volontaire ; les retenus (et les non retenus), quand le chef envoie la garde.
   {
     for (const p of pompiers) {
       for (const [s, oui] of Object.entries(p.gardeSamedi || {})) {
         const cle = `garde-dispo-${s}-${p.id}`;
         if (oui !== true || s < jour || envois[cle]) continue;
-        aEnvoyer.push({ pompier: chefTel, url: `${SITE}#chef-garde`, tag: `garde-dispo-${s}`, title: 'Dispo pour la garde du samedi', body: `${nom(p)} est dispo ${libelleGarde(s)}.` });
+        aEnvoyer.push({ pompier: chefTel, url: `${SITE}#chef-garde`, tag: `garde-dispo-${s}`, title: 'Dispo pour la garde postée', body: `${nom(p)} est dispo ${libelleGarde(s)}.` });
         envois[cle] = new Date().toISOString();
       }
     }
-    const ge = cfg.gardeEnvoi;
-    const cleGe = ge?.le?.toMillis ? `garde-envoi-${ge.le.toMillis()}` : '';
-    if (cleGe && !envois[cleGe] && ge.notif === false) envois[cleGe] = 'sans notification';
-    else if (cleGe && !envois[cleGe] && !rap.gardeReponse) envois[cleGe] = 'reponses garde coupees';
-    else if (cleGe && !envois[cleGe] && ge.samedi >= jour) {
+    // Gardes envoyées par le chef : cfg.gardeEnvois[date] (et l'ancien cfg.gardeEnvoi, une seule garde).
+    const envoisGarde = [...Object.values(cfg.gardeEnvois || {}), ...(cfg.gardeEnvoi ? [cfg.gardeEnvoi] : [])];
+    for (const ge of envoisGarde) {
+      const cleGe = ge?.le?.toMillis ? `garde-envoi-${ge.samedi}-${ge.le.toMillis()}` : '';
+      if (!cleGe || envois[cleGe] || envois[`garde-envoi-${ge.le.toMillis()}`]) continue;
+      if (ge.notif === false) { envois[cleGe] = 'sans notification'; continue; }
+      if (!rap.gardeReponse) { envois[cleGe] = 'reponses garde coupees'; continue; }
+      if (ge.samedi < jour) { envois[cleGe] = 'passee'; continue; }
       const mot = String(ge.message || '').trim().slice(0, 200);
       for (const id of ge.ids || []) {
         const p = pompiers.find((x) => x.id === id);
